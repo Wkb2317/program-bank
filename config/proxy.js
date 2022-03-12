@@ -11,7 +11,8 @@ export default {
     // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
     '/api/': {
       // 要代理的地址
-      target: 'http://127.0.0.1:9000/',
+      // target: 'http://127.0.0.1:9000/',
+      target: 'http://127.0.0.1:8001/',
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,
@@ -26,13 +27,13 @@ export default {
       },
     },
   },
-  pre: {
+  production: {
     '/api/': {
-      target: 'your pre url',
+      target: 'http://110.40.236.242:8001/',
       changeOrigin: true,
-      pathRewrite: {
-        '^': '',
-      },
+      // pathRewrite: {
+      //   '^': '',
+      // },
     },
   },
 };

@@ -14,6 +14,8 @@ import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
+import { useDispatch } from 'react-redux';
+import { getCurrentUser } from '../../../store/user/actions';
 
 const LoginMessage = ({ content }) => (
   <Alert
@@ -31,11 +33,12 @@ const Login = () => {
   const [type, setType] = useState('mobile');
   const { initialState, setInitialState } = useModel('@@initialState');
   const intl = useIntl();
+  const dispatch = useDispatch();
 
   const fetchUserInfo = async () => {
-    console.log(initialState);
+    // console.log(initialState);
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
-    console.log(userInfo);
+    // console.log(userInfo);
     if (userInfo.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
     } else {
@@ -46,7 +49,7 @@ const Login = () => {
   const handleSubmit = async (values) => {
     // 登录
     const msg = await login({ ...values, type });
-    console.log(msg);
+    // console.log(msg);
     if (msg.code === 1) {
       localStorage.setItem('token', msg.token);
       localStorage.setItem('userEmail', values.mobile);
@@ -57,14 +60,15 @@ const Login = () => {
       message.success(defaultLoginSuccessMessage);
 
       await fetchUserInfo();
-
+      dispatch(getCurrentUser(localStorage.getItem('token')));
       /** 此方法会跳转到 redirect 参数所在的位置 */
       // console.log(history);
       // if (!history) return;
       // const { query } = history.location;
       // const { redirect } = query;
       // console.log(redirect);
-      history.push('/welcom');
+      history.push('/welcome');
+
       return;
     }
     message.error('登录失败，请重新登录！');
@@ -72,6 +76,7 @@ const Login = () => {
   };
 
   const handleGetCaptcha = async (email) => {
+    // console.log(process.env);
     if (email === '') return;
     const result = await getCaptcha({
       email,
@@ -85,9 +90,9 @@ const Login = () => {
   const { status, type: loginType } = userLoginState;
   return (
     <div className={styles.container}>
-      <div className={styles.lang} data-lang>
+      {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
-      </div>
+      </div> */}
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}
@@ -274,7 +279,7 @@ const Login = () => {
           </div>
         </LoginForm>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

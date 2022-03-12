@@ -43,11 +43,29 @@ export default [
     ],
   },
   {
+    path: '/account',
+    name: 'account',
+    icon: 'user',
+    component: './account/center',
+    routes: [
+      {
+        path: '/account',
+        component: './account/profile',
+      },
+      {
+        path: '/account/score',
+        component: './account/score',
+      },
+    ],
+  },
+
+  {
     name: 'list.table-list',
     icon: 'table',
     path: '/list',
     component: './TableList',
   },
+
   {
     path: '/',
     redirect: '/welcome',

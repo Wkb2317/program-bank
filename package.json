@@ -55,6 +55,8 @@
     "@umijs/route-utils": "^2.0.0",
     "antd": "^4.17.0",
     "classnames": "^2.3.0",
+    "dva": "^2.4.1",
+    "immutable": "^4.0.0",
     "lodash": "^4.17.0",
     "moment": "^2.29.0",
     "omit.js": "^2.0.2",
@@ -64,6 +66,11 @@
     "react-dev-inspector": "^1.7.0",
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.2.0",
+    "react-redux": "^7.2.6",
+    "redux": "^4.1.2",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-immutable": "^4.0.0",
+    "redux-thunk": "^2.4.1",
     "umi": "^3.5.0"
   },
   "devDependencies": {

@@ -12,6 +12,7 @@ import { outLogin } from '@/services/ant-design-pro/api';
  */
 const loginOut = async (userEmail) => {
   await outLogin(userEmail);
+  localStorage.setItem('token', '');
   const { query = {}, search, pathname } = history.location;
   const { redirect } = query; // Note: There may be security issues, please note
 
@@ -66,7 +67,7 @@ const AvatarDropdown = ({ menu }) => {
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
       {menu && (
-        <Menu.Item key="center">
+        <Menu.Item key="">
           <UserOutlined />
           个人中心
         </Menu.Item>
@@ -77,7 +78,13 @@ const AvatarDropdown = ({ menu }) => {
           个人设置
         </Menu.Item>
       )}
-      {menu && <Menu.Divider />}
+
+      <Menu.Item key="">
+        <UserOutlined />
+        个人中心
+      </Menu.Item>
+
+      {/* {menu && <Menu.Divider />} */}
 
       <Menu.Item key="logout">
         <LogoutOutlined />

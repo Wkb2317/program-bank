@@ -1,0 +1,29 @@
+.userinfo .top {
+  height: 140px;
+  padding: 20px;
+  background-color: #ffff;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px 5px #eeee;
+}
+.userinfo .top .avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 100%;
+}
+.userinfo .top .username {
+  margin-left: 20px;
+}
+.userinfo .main {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #ffff;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px 5px #eeee;
+}
+.userinfo .main .title {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+}
