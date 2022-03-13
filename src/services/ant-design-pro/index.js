@@ -5,7 +5,9 @@
 // API 唯一标识：
 import * as api from './api';
 import * as login from './login';
+import * as user from './user.js';
 export default {
   api,
   login,
+  user,
 };
