@@ -38,18 +38,18 @@ const Login = () => {
 
   useEffect(async () => {
     const token = localStorage.getItem('token');
+    // console.log(token);
     if (token) {
       await fetchUserInfo();
-      dispatch(getCurrentUser(localStorage.getItem('token')));
-      history.push('/welcome');
+      dispatch(getCurrentUser(token));
     }
-  });
+  }, []);
 
   const fetchUserInfo = async () => {
     // console.log(initialState);
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
     // console.log(userInfo);
-    if (userInfo.isLogin) {
+    if (userInfo?.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
     } else {
       await setInitialState((s) => ({ ...s, currentUser: undefined }));

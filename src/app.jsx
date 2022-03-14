@@ -65,11 +65,11 @@ export const layout = ({ initialState, setInitialState }) => {
     // footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history; // 如果没有登录，重定向到 login
-
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
+        console.log('重定向');
       } else {
-        history.push(location.pathname);
+        // history.push(location.pathname);
       }
     },
     links: isDev

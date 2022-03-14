@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useRef, useState } from 'react';
 import { useEffect } from 'react';
+import { useModel } from 'umi';
 import { Divider, Button, Modal, Form, Input, Upload, message, Row, Col } from 'antd';
 import { EditOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -8,6 +9,7 @@ import { getCurrentUser, updateUserInfoAction } from '@/store/user/actions';
 import './index.less';
 
 const Profile = memo(function profile() {
+  const { initialState, setInitialState } = useModel('@@initialState');
   const dispatch = useDispatch();
   const formRef = useRef();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -44,13 +46,14 @@ const Profile = memo(function profile() {
     shallowEqual,
   );
 
-  console.log(currentUser);
+  // console.log(currentUser);
 
   /**
    *  dialog
    * */
   const showModal = () => {
     setIsModalVisible(true);
+    setImageUrl(currentUser.avatar);
   };
 
   const handleOk = () => {
@@ -63,10 +66,11 @@ const Profile = memo(function profile() {
   };
 
   // form 表单提交
-  const onFinish = (values) => {
-    values.user.avatar = imageUrl;
-    values.user.email = localStorage.getItem('userEmail');
-    dispatch(updateUserInfoAction(values.user));
+  const onFinish = async (values) => {
+    values.avatar = imageUrl;
+    values.email = localStorage.getItem('userEmail');
+    dispatch(updateUserInfoAction(values));
+    await setInitialState((s) => ({ ...s, currentUser: values }));
     setIsModalVisible(false);
   };
 
@@ -155,18 +159,19 @@ const Profile = memo(function profile() {
                   ref={formRef}
                   validateMessages={validateMessages}
                   labelAlign="left"
+                  initialValues={currentUser}
                 >
-                  <Form.Item name={['user', 'name']} label="姓名" rules={[{ required: true }]}>
+                  <Form.Item name={['name']} label="姓名" rules={[{ required: true }]}>
                     <Input />
                   </Form.Item>
-                  <Form.Item name={['user', 'class']} label="班级" rules={[{ required: true }]}>
+                  <Form.Item name={['class']} label="班级" rules={[{ required: true }]}>
                     <Input />
                   </Form.Item>
 
                   <Form.Item
-                    name={['user', 'avatar']}
+                    name={['avatar']}
                     label="头像"
-                    valuePropName="fileList"
+                    valuePropName="file"
                     getValueFromEvent={normFile}
                   >
                     <Upload
@@ -185,10 +190,10 @@ const Profile = memo(function profile() {
                       )}
                     </Upload>
                   </Form.Item>
-                  <Form.Item name={['user', 'interesting']} label="兴趣">
+                  <Form.Item name={['interesting']} label="兴趣">
                     <Input />
                   </Form.Item>
-                  <Form.Item name={['user', 'introduction']} label="个人简介">
+                  <Form.Item name={['introduction']} label="个人简介">
                     <Input.TextArea />
                   </Form.Item>
                   <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 16 }}>
@@ -220,7 +225,6 @@ const Profile = memo(function profile() {
                     <div style={style}>{currentUser.email}</div>
                   </Col>
                 </Row>
-
                 <Row gutter={12}>
                   <Col className="gutter-row" span={6}>
                     <div style={style}>积分</div>
@@ -229,6 +233,17 @@ const Profile = memo(function profile() {
                     <div style={style}>{currentUser.integral}</div>
                   </Col>
                 </Row>
+                <Row gutter={12}>
+                  <Col className="gutter-row" span={6}>
+                    <div style={style}>兴趣</div>
+                  </Col>
+                  <Col className="gutter-row" span={6}>
+                    <div style={style}>
+                      {currentUser.introduction ? currentUser.interesting : '暂无'}
+                    </div>
+                  </Col>
+                </Row>
+
                 <Row gutter={12}>
                   <Col className="gutter-row" span={6}>
                     <div style={style}>个人简介</div>
