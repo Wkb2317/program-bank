@@ -16,6 +16,7 @@ import { getCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
 import { useDispatch } from 'react-redux';
 import { getCurrentUser } from '../../../store/user/actions';
+import { useEffect } from 'react';
 
 const LoginMessage = ({ content }) => (
   <Alert
@@ -34,6 +35,15 @@ const Login = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const intl = useIntl();
   const dispatch = useDispatch();
+
+  useEffect(async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await fetchUserInfo();
+      dispatch(getCurrentUser(localStorage.getItem('token')));
+      history.push('/welcome');
+    }
+  });
 
   const fetchUserInfo = async () => {
     // console.log(initialState);
@@ -96,10 +106,10 @@ const Login = () => {
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle={intl.formatMessage({
-            id: 'pages.layouts.userLayout.title',
-          })}
+          title="程序设计题库"
+          // subTitle={intl.formatMessage({
+          //   id: 'pages.layouts.userLayout.title',
+          // })}
           initialValues={{
             autoLogin: true,
           }}

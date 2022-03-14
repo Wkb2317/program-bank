@@ -68,6 +68,8 @@ export const layout = ({ initialState, setInitialState }) => {
 
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
+      } else {
+        history.push(location.pathname);
       }
     },
     links: isDev
