@@ -1,5 +1,15 @@
 export default [
   {
+    path: '/',
+    redirect: '/welcome',
+  },
+  {
+    path: '/welcome',
+    name: 'welcome',
+    icon: 'smile',
+    component: './Welcome',
+  },
+  {
     path: '/user',
     layout: false,
     routes: [
@@ -18,12 +28,7 @@ export default [
       },
     ],
   },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
+
   {
     path: '/admin',
     name: 'admin',
@@ -44,17 +49,26 @@ export default [
   },
   {
     path: '/account',
+    redirect: '/account/profile',
+  },
+  {
+    path: '/account',
     name: 'account',
     icon: 'user',
     component: './account/center',
+
     routes: [
       {
-        path: '/account',
+        path: '/account/profile',
         component: './account/profile',
       },
       {
         path: '/account/score',
         component: './account/score',
+      },
+      {
+        path: '/account/rank',
+        component: './account/rank',
       },
     ],
   },
@@ -66,10 +80,6 @@ export default [
     component: './TableList',
   },
 
-  {
-    path: '/',
-    redirect: '/welcome',
-  },
   {
     component: './404',
   },

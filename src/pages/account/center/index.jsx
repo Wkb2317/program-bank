@@ -8,7 +8,7 @@ import './index.less';
 const defaultProps = {
   routes: [
     {
-      path: '/account',
+      path: '/account/profile',
       name: '个人资料 ',
       icon: <CrownOutlined />,
       component: './account/profile',
@@ -20,16 +20,16 @@ const defaultProps = {
       component: './account/score',
     },
     {
-      path: '/admin/sub-page3',
-      name: '三级页面',
+      path: '/account/rank',
+      name: '积分排行',
       icon: <SmileOutlined />,
-      component: './Welcome',
+      component: './account/rank',
     },
   ],
 };
 
 export default (props) => {
-  const [pathname, setPathname] = useState('/account');
+  const [pathname, setPathname] = useState('/account/profile');
 
   return (
     <>
@@ -45,8 +45,7 @@ export default (props) => {
         menuItemRender={(item, dom) => (
           <a
             onClick={() => {
-              // console.log(item.path);
-              setPathname(item.path || '/account');
+              setPathname(item.path);
               history.push(item.path);
             }}
           >

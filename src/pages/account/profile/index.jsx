@@ -35,18 +35,14 @@ const Profile = memo(function profile() {
     },
   };
 
-  useEffect(() => {
-    dispatch(getCurrentUser(localStorage.getItem('token')));
-  }, [dispatch]);
-
-  const { currentUser } = useSelector(
+  let { currentUser } = useSelector(
     (state) => ({
       currentUser: state.getIn(['CurrentUser', 'currentUser']),
     }),
     shallowEqual,
   );
-
-  // console.log(currentUser);
+  currentUser = initialState.currentUser;
+  console.log(currentUser);
 
   /**
    *  dialog
@@ -69,7 +65,7 @@ const Profile = memo(function profile() {
   const onFinish = async (values) => {
     values.avatar = imageUrl;
     values.email = localStorage.getItem('userEmail');
-    dispatch(updateUserInfoAction(values));
+    await dispatch(updateUserInfoAction(values));
     await setInitialState((s) => ({ ...s, currentUser: values }));
     setIsModalVisible(false);
   };
@@ -136,7 +132,7 @@ const Profile = memo(function profile() {
       {currentUser?.isLogin && (
         <div className="userinfo">
           <div className="top">
-            <img className="avatar" src={currentUser?.avatar} alt="" />
+            <img onClick={showModal} className="avatar" src={currentUser?.avatar} alt="" />
             <span className="username">{currentUser?.name ? currentUser.name : '程序猿'}</span>
           </div>
 
@@ -239,7 +235,7 @@ const Profile = memo(function profile() {
                   </Col>
                   <Col className="gutter-row" span={6}>
                     <div style={style}>
-                      {currentUser.introduction ? currentUser.interesting : '暂无'}
+                      {currentUser.interesting ? currentUser.interesting : '暂无'}
                     </div>
                   </Col>
                 </Row>

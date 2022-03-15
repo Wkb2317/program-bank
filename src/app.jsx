@@ -40,14 +40,14 @@ export async function getInitialState() {
     return undefined;
   }; // 如果是登录页面，不执行
 
-  if (history.location.pathname !== loginPath) {
-    const currentUser = await fetchUserInfo(localStorage.getItem('token'));
-    return {
-      fetchUserInfo,
-      currentUser,
-      settings: defaultSettings,
-    };
-  }
+  // if (history.location.pathname !== loginPath) {
+  const currentUser = await fetchUserInfo(localStorage.getItem('token'));
+  return {
+    fetchUserInfo,
+    currentUser,
+    settings: defaultSettings,
+  };
+  // }
 
   return {
     fetchUserInfo,
@@ -68,22 +68,9 @@ export const layout = ({ initialState, setInitialState }) => {
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
         console.log('重定向');
-      } else {
-        // history.push(location.pathname);
       }
     },
-    links: isDev
-      ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-          <Link to="/~docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
-        ]
-      : [],
+
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

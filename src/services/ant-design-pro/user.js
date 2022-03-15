@@ -6,3 +6,17 @@ export function updateUserInfo(data) {
     data,
   });
 }
+
+export function register(data) {
+  return request('/api/register', {
+    method: 'post',
+    data,
+  });
+}
+
+export function updatePassword(data) {
+  return request('/api/updatePassword', {
+    method: 'post',
+    data,
+  });
+}
