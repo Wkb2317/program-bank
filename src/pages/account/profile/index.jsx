@@ -42,7 +42,7 @@ const Profile = memo(function profile() {
     shallowEqual,
   );
   currentUser = initialState.currentUser;
-  // console.log(initialState.);
+  // console.log(currentUser);
 
   /**
    *  dialog
@@ -223,7 +223,7 @@ const Profile = memo(function profile() {
                   <div style={style}>积分</div>
                 </Col>
                 <Col className="gutter-row" span={6}>
-                  <div style={style}>{currentUser?.integral}</div>
+                  <div style={style}>{currentUser.integration}</div>
                 </Col>
               </Row>
               <Row gutter={12}>

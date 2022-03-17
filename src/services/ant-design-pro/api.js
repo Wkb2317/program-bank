@@ -2,8 +2,8 @@
 
 /* eslint-disable */
 import { request } from 'umi';
-/** 获取当前的用户 GET /api/currentUser */
 
+/** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(token, options) {
   return request('/api/currentUser', {
     method: 'GET',
@@ -13,8 +13,8 @@ export async function currentUser(token, options) {
     ...(options || {}),
   });
 }
-/** 退出登录接口 POST /api/login/outLogin */
 
+/** 退出登录接口 POST /api/login/outLogin */
 export async function outLogin(userEmail, options) {
   return request('/api/login/outLogin', {
     method: 'POST',
@@ -22,8 +22,8 @@ export async function outLogin(userEmail, options) {
     ...(options || {}),
   });
 }
-/** 登录接口 POST /api/login/account */
 
+/** 登录接口 POST /api/login/account */
 export async function login(body, options) {
   return request('/api/login/account', {
     method: 'POST',

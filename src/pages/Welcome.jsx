@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { memo, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography } from 'antd';
+import { Card, Alert, Typography, notification } from 'antd';
+import { SmileOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage } from 'umi';
+import { getLoginIntegration } from '@/services/ant-design-pro/user';
 import styles from './Welcome.less';
 
 const CodePreview = ({ children }) => (
@@ -12,11 +14,31 @@ const CodePreview = ({ children }) => (
   </pre>
 );
 
-const Welcome = () => {
+const Welcome = memo(() => {
   const intl = useIntl();
+
+  const isFirstLoginToday = async (uuid) => {
+    let res = await getLoginIntegration(uuid);
+    console.log(res);
+    let message = '欢迎回来';
+    let description = res.msg;
+    res.code &&
+      notification.open({
+        message,
+        description,
+        icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+      });
+  };
+
+  useEffect(() => {
+    let uuid = localStorage.getItem('uuid');
+    uuid && isFirstLoginToday(uuid);
+  }, []);
+
   return (
     <PageContainer>
-      <Card>
+      欢迎进入首页
+      {/* <Card>
         <Alert
           message={intl.formatMessage({
             id: 'pages.welcome.alertMessage',
@@ -57,9 +79,9 @@ const Welcome = () => {
           </a>
         </Typography.Text>
         <CodePreview>yarn add @ant-design/pro-layout</CodePreview>
-      </Card>
+      </Card> */}
     </PageContainer>
   );
-};
+});
 
 export default Welcome;

@@ -39,13 +39,14 @@ const Login = () => {
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    await fetchUserInfo();
+    if (localStorage.getItem('token')) {
+      await fetchUserInfo();
+    }
   }, []);
 
   const fetchUserInfo = async () => {
     // console.log(initialState);
-    console.log('1');
-    console.log(localStorage.getItem('token'));
+    // console.log(localStorage.getItem('token'));
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
     dispatch(setCurrentUser(userInfo));
     if (userInfo?.isLogin) {
@@ -63,6 +64,8 @@ const Login = () => {
     if (msg.code === 1) {
       localStorage.setItem('token', msg.token);
       localStorage.setItem('userEmail', values.email);
+      console.log(msg);
+      localStorage.setItem('uuid', msg.id);
       const defaultLoginSuccessMessage = intl.formatMessage({
         id: 'pages.login.success',
         defaultMessage: '登录成功！',
