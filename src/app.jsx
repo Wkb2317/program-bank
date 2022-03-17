@@ -12,7 +12,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 import './app.less';
 import { store } from './store/index';
-import { getCurrentUser } from './store/user/actions';
+import { setCurrentUser } from './store/user/actions';
 import { useDispatch } from 'react-redux';
 /** 获取用户信息比较慢的时候会展示一个 loading */
 
@@ -42,6 +42,9 @@ export async function getInitialState() {
 
   // if (history.location.pathname !== loginPath) {
   const currentUser = await fetchUserInfo(localStorage.getItem('token'));
+  // console.log(currentUser);
+  // const dispatch = useDispatch();
+  // dispatch(setCurrentUser(currentUser));
   return {
     fetchUserInfo,
     currentUser,
@@ -81,7 +84,7 @@ export const layout = ({ initialState, setInitialState }) => {
       return (
         <Provider store={store}>
           {children}
-          {!props.location?.pathname?.includes('/login') && (
+          {/* {!props.location?.pathname?.includes('/login') && (
             <SettingDrawer
               enableDarkTheme
               settings={initialState?.settings}
@@ -89,7 +92,7 @@ export const layout = ({ initialState, setInitialState }) => {
                 setInitialState((preInitialState) => ({ ...preInitialState, settings }));
               }}
             />
-          )}
+          )} */}
         </Provider>
       );
     },

@@ -37,10 +37,7 @@ export function getCurrentUser(token) {
 export function updateUserInfoAction(data) {
   return (dispatch) => {
     updateUserInfo(data).then((res) => {
-      console.log(res);
       if (res.code === 1) {
-        message.success('修改成功');
-        console.log(res.data);
         dispatch({
           type: 'currentUser',
           payload: res.data,

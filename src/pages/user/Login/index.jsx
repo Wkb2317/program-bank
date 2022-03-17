@@ -44,6 +44,8 @@ const Login = () => {
 
   const fetchUserInfo = async () => {
     // console.log(initialState);
+    console.log('1');
+    console.log(localStorage.getItem('token'));
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
     dispatch(setCurrentUser(userInfo));
     if (userInfo?.isLogin) {

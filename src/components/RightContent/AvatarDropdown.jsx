@@ -12,29 +12,21 @@ import { outLogin } from '@/services/ant-design-pro/api';
  */
 const loginOut = async (userEmail) => {
   await outLogin(userEmail);
-  localStorage.setItem('token', '');
-  const { query = {}, search, pathname } = history.location;
-  const { redirect } = query; // Note: There may be security issues, please note
+  await localStorage.setItem('token', '');
+  await localStorage.setItem('userEmail', '');
 
-  if (window.location.pathname !== '/user/login' && !redirect) {
-    history.replace({
-      pathname: '/user/login',
-      search: stringify({
-        redirect: pathname + search,
-      }),
-    });
-  }
+  history.replace('/user/login');
 };
 
 const AvatarDropdown = ({ menu }) => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const onMenuClick = useCallback(
-    (event) => {
+    async (event) => {
       const { key } = event;
 
       if (key === 'logout') {
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
         loginOut(localStorage.getItem('userEmail'));
+        await setInitialState((s) => ({ ...s, currentUser: undefined }));
         return;
       }
 
