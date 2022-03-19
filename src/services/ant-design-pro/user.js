@@ -31,3 +31,18 @@ export function getLoginIntegration(uuid) {
     params: { uuid },
   });
 }
+
+// 积分记录
+export function getInegrationHistory(uuid) {
+  return request('/api/getInegrationHistory', {
+    method: 'get',
+    params: { uuid },
+  });
+}
+
+// 积分总榜
+export function getTotalIntegrationRank() {
+  return request('/api/getTotalIntegrationRank', {
+    method: 'get',
+  });
+}

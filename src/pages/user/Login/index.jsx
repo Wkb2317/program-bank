@@ -49,6 +49,8 @@ const Login = () => {
     // console.log(localStorage.getItem('token'));
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
     dispatch(setCurrentUser(userInfo));
+    console.log(userInfo);
+    // console.log(userInfo?.data.isLogin);
     if (userInfo?.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
       history.push('/welcome');
