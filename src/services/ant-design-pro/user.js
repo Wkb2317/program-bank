@@ -1,3 +1,4 @@
+import { FundProjectionScreenOutlined } from '@ant-design/icons';
 import { request } from 'umi';
 
 // 更新用户信息
@@ -44,5 +45,32 @@ export function getInegrationHistory(uuid) {
 export function getTotalIntegrationRank() {
   return request('/api/getTotalIntegrationRank', {
     method: 'get',
+  });
+}
+
+// 个人积分排行
+export function getMyRank(uuid) {
+  return request('/api/getMyRank', {
+    method: 'get',
+    params: { uuid },
+  });
+}
+
+// 周榜
+export function getWeekRank(startTime, endTime) {
+  return request('/api/getWeekRank', {
+    method: 'get',
+    params: {
+      startTime,
+      endTime,
+    },
+  });
+}
+
+// 月榜
+export function getMonthRank(month) {
+  return request('/api/getMonthRank', {
+    method: 'get',
+    params: { month },
   });
 }

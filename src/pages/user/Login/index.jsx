@@ -49,7 +49,7 @@ const Login = () => {
     // console.log(localStorage.getItem('token'));
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
     dispatch(setCurrentUser(userInfo));
-    console.log(userInfo);
+    // console.log(userInfo);
     // console.log(userInfo?.data.isLogin);
     if (userInfo?.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
@@ -66,7 +66,7 @@ const Login = () => {
     if (msg.code === 1) {
       localStorage.setItem('token', msg.token);
       localStorage.setItem('userEmail', values.email);
-      console.log(msg);
+      // console.log(msg);
       localStorage.setItem('uuid', msg.id);
       const defaultLoginSuccessMessage = intl.formatMessage({
         id: 'pages.login.success',

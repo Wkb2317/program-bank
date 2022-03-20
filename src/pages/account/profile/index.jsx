@@ -7,6 +7,7 @@ import moment from 'moment';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { getCurrentUser, updateUserInfoAction } from '@/store/user/actions';
 import './index.less';
+import { wrap } from 'lodash';
 
 const Profile = memo(function profile() {
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -202,56 +203,56 @@ const Profile = memo(function profile() {
 
           <div className="info">
             <div className="class">
-              <Row gutter={12}>
-                <Col className="gutter-row" span={6}>
+              <Row gutter={24}>
+                <Col className="gutter-row" span={8}>
                   <div style={style}>班级</div>
                 </Col>
-                <Col className="gutter-row" span={6}>
+                <Col className="gutter-row" span={16}>
                   <div style={style}>{currentUser?.class ? currentUser.class : '暂无'}</div>
                 </Col>
               </Row>
-              <Row gutter={12}>
-                <Col className="gutter-row" span={6}>
+              <Row gutter={24}>
+                <Col className="gutter-row" span={8}>
                   <div style={style}>邮箱</div>
                 </Col>
-                <Col className="gutter-row" span={6}>
+                <Col className="gutter-row" span={16}>
                   <div style={style}>{currentUser?.email}</div>
                 </Col>
               </Row>
-              <Row gutter={12}>
-                <Col className="gutter-row" span={6}>
+              <Row gutter={24}>
+                <Col className="gutter-row" span={8}>
                   <div style={style}>积分</div>
                 </Col>
-                <Col className="gutter-row" span={6}>
-                  <div style={style}>{currentUser.integration}</div>
+                <Col className="gutter-row" span={16}>
+                  <div style={style}>{currentUser?.integration}</div>
                 </Col>
               </Row>
-              <Row gutter={12}>
-                <Col className="gutter-row" span={6}>
+              <Row gutter={24}>
+                <Col className="gutter-row" span={8}>
                   <div style={style}>兴趣</div>
                 </Col>
-                <Col className="gutter-row" span={6}>
+                <Col className="gutter-row" span={16}>
                   <div style={style}>
                     {currentUser?.interesting ? currentUser.interesting : '暂无'}
                   </div>
                 </Col>
               </Row>
 
-              <Row gutter={12}>
-                <Col className="gutter-row" span={6}>
+              <Row gutter={24}>
+                <Col className="gutter-row" span={8}>
                   <div style={style}>个人简介</div>
                 </Col>
-                <Col className="gutter-row" span={6}>
+                <Col className="gutter-row" span={16}>
                   <div style={style}>
                     {currentUser?.introduction ? currentUser.introduction : '暂无'}
                   </div>
                 </Col>
               </Row>
-              <Row gutter={12}>
-                <Col className="gutter-row" span={6}>
+              <Row gutter={24}>
+                <Col className="gutter-row" span={8}>
                   <div style={style}>注册时间</div>
                 </Col>
-                <Col className="gutter-row" span={6}>
+                <Col className="gutter-row" span={16}>
                   <div style={style}>
                     {moment(currentUser?.registerTime).format('YYYY-MM-DD HH:mm:ss')}
                   </div>

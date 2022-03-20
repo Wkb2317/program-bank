@@ -47,17 +47,17 @@ export default [
       },
     ],
   },
-  {
-    path: '/account',
-    redirect: '/account/profile',
-  },
+
   {
     path: '/account',
     name: 'account',
     icon: 'user',
     component: './account/center',
-
     routes: [
+      {
+        path: '/account',
+        redirect: '/account/profile',
+      },
       {
         path: '/account/profile',
         component: './account/profile',
