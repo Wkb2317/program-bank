@@ -1,18 +1,21 @@
-import React, { memo, useState, useEffect, useMemo } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import ProCard from '@ant-design/pro-card';
 import { Card, message, Modal, DatePicker, Button } from 'antd';
 import { SearchOutlined, SmileOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import dayjs from 'dayjs';
 import {
   getTotalIntegrationRank,
   getMyRank,
   getMonthRank,
   getWeekRank,
 } from '@/services/ant-design-pro/user';
+import Chart from '@/components/chart/index';
+
 import style from './index.less';
 
 const Rank = memo(() => {
+  const [chartVisable, setChartVisbale] = useState(false);
+  const [toUserId, setToUserId] = useState('');
   const [totalListLoading, setTotalListLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const [myRankLoading, setMyRankLoading] = useState(false);
@@ -20,8 +23,9 @@ const Rank = memo(() => {
   const [weekRank, setWeekRank] = useState(null);
   const [monthRank, setMonthRank] = useState(null);
 
-  // const nowTime = dayjs();
+  const toUserIdRef = useRef('123');
 
+  // const nowTime = dayjs();
   useEffect(() => {
     getTotal();
     handleGetWeekRank();
@@ -88,11 +92,23 @@ const Rank = memo(() => {
     handleGetMonthRank(dateString);
   };
 
+  const openChartDiaLog = (userId) => {
+    setToUserId((pre) => userId);
+    toUserIdRef.current = userId;
+    // console.log(toUserIdRef.current);
+    setChartVisbale((pre) => true);
+  };
+
+  const closeChartDiaLog = () => {
+    setChartVisbale((pre) => false);
+  };
+
   return (
-    <>
+    <div className={style.wrapper}>
       <ProCard style={{ marginTop: 8, padding: 0 }} gutter={[20, 20]} wrap title="积分排行">
         <ProCard colSpan={{ xs: 24, sm: 24, md: 12, lg: 12, xl: 8 }} layout="center" bordered>
           <Card
+            className={style.minheight}
             title="总积分榜"
             extra={
               <Button
@@ -112,7 +128,12 @@ const Rank = memo(() => {
                 return (
                   <div key={item.id} className={style.totalRank}>
                     <div className={style.userinfo}>
-                      <img className={style.avatar} src={item.avatar} alt="" />
+                      <img
+                        onClick={(e) => openChartDiaLog(item.id)}
+                        className={style.avatar}
+                        src={item.avatar}
+                        alt=""
+                      />
                       <div>
                         <div>
                           <span>{item?.name}</span>
@@ -130,6 +151,7 @@ const Rank = memo(() => {
         </ProCard>
         <ProCard colSpan={{ xs: 24, sm: 24, md: 12, lg: 12, xl: 8 }} layout="center" bordered>
           <Card
+            className={style.minheight}
             title="积分周榜"
             extra={
               <DatePicker
@@ -146,7 +168,12 @@ const Rank = memo(() => {
               weekRank.map((item, index) => (
                 <div key={item.id} className={style.totalRank}>
                   <div className={style.userinfo}>
-                    <img className={style.avatar} src={item.avatar} alt="" />
+                    <img
+                      onClick={(e) => openChartDiaLog(item.id)}
+                      className={style.avatar}
+                      src={item.avatar}
+                      alt=""
+                    />
                     <div>
                       <div>
                         <span>{item?.name}</span>
@@ -162,6 +189,7 @@ const Rank = memo(() => {
         </ProCard>
         <ProCard colSpan={{ xs: 24, sm: 24, md: 12, lg: 12, xl: 8 }} layout="center" bordered>
           <Card
+            className={style.minheight}
             title="积分月榜"
             extra={
               <DatePicker
@@ -179,7 +207,12 @@ const Rank = memo(() => {
               monthRank.map((item, index) => (
                 <div key={item.id} className={style.totalRank}>
                   <div className={style.userinfo}>
-                    <img className={style.avatar} src={item.avatar} alt="" />
+                    <img
+                      onClick={(e) => openChartDiaLog(item.id)}
+                      className={style.avatar}
+                      src={item.avatar}
+                      alt=""
+                    />
                     <div>
                       <div>
                         <span>{item?.name}</span>
@@ -194,7 +227,13 @@ const Rank = memo(() => {
           </Card>
         </ProCard>
       </ProCard>
-    </>
+
+      <Chart
+        visible={chartVisable}
+        toUserId={toUserIdRef.current}
+        onClose={closeChartDiaLog}
+      ></Chart>
+    </div>
   );
 });
 

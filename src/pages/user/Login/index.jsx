@@ -7,7 +7,7 @@ import {
   WeiboCircleOutlined,
 } from '@ant-design/icons';
 import { Alert, message, Tabs } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { ProFormCaptcha, ProFormCheckbox, ProFormText, LoginForm } from '@ant-design/pro-form';
 import { useIntl, history, FormattedMessage, SelectLang, useModel } from 'umi';
 import Footer from '@/components/Footer';
@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { getCurrentUser, setCurrentUser } from '../../../store/user/actions';
 import { useEffect } from 'react';
 
-const LoginMessage = ({ content }) => (
+const LoginMessage = memo(({ content }) => (
   <Alert
     style={{
       marginBottom: 24,
@@ -29,9 +29,9 @@ const LoginMessage = ({ content }) => (
     type="error"
     showIcon
   />
-);
+));
 
-const Login = () => {
+const Login = memo(() => {
   const [userLoginState, setUserLoginState] = useState({});
   const [type, setType] = useState('account');
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -45,12 +45,8 @@ const Login = () => {
   }, []);
 
   const fetchUserInfo = async () => {
-    // console.log(initialState);
-    // console.log(localStorage.getItem('token'));
     const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
     dispatch(setCurrentUser(userInfo));
-    // console.log(userInfo);
-    // console.log(userInfo?.data.isLogin);
     if (userInfo?.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
       history.push('/welcome');
@@ -168,7 +164,7 @@ const Login = () => {
       </div> */}
       <div className={styles.content}>
         <LoginForm
-          logo={<img alt="logo" src="/logo.svg" />}
+          logo={<img alt="logo" src="http://110.40.236.242:8001/static/logo.png" />}
           title="程序设计题库"
           // subTitle={intl.formatMessage({
           //   id: 'pages.layouts.userLayout.title',
@@ -504,6 +500,6 @@ const Login = () => {
       {/* <Footer /> */}
     </div>
   );
-};
+});
 
 export default Login;

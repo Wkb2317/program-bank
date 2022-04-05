@@ -14,6 +14,8 @@ import './app.less';
 import { store } from './store/index';
 import { setCurrentUser } from './store/user/actions';
 import { useDispatch } from 'react-redux';
+import io from 'socket.io-client';
+import { getAllMessage } from '@/services/ant-design-pro/socket';
 /** 获取用户信息比较慢的时候会展示一个 loading */
 
 export const initialStateConfig = {
@@ -24,10 +26,15 @@ export const initialStateConfig = {
  * */
 
 export async function getInitialState() {
+  const token = window.localStorage.getItem('token');
+  const uuid = window.localStorage.getItem('uuid');
+  let allMessage = [];
+  let currentUser = {};
+  let Socket = null;
+
   const fetchUserInfo = async (token) => {
     try {
       const msg = await queryCurrentUser(token);
-      // console.log(msg);
       if (msg.isLogin) {
         return msg;
       } else {
@@ -38,22 +45,36 @@ export async function getInitialState() {
     }
 
     return undefined;
-  }; // 如果是登录页面，不执行
+  };
 
-  // if (history.location.pathname !== loginPath) {
-  const currentUser = await fetchUserInfo(localStorage.getItem('token'));
-  // console.log(currentUser);
-  // const dispatch = useDispatch();
-  // dispatch(setCurrentUser(currentUser));
+  if (token) {
+    currentUser = await fetchUserInfo(token);
+  }
+
+  // 不是登录界面
+  if (history.location.pathname !== loginPath) {
+    const res = await getAllMessage(uuid);
+    res.code === 1 ? (allMessage = res.data) : (allMessage = []);
+
+    // prod : ws://110.40.236.242:8001/
+    // dev: ws://127.0.0.1:8001/
+    Socket = io('ws://127.0.0.1:8001/', {
+      reconnectionDelayMax: 10000,
+      query: {
+        id: uuid,
+      },
+    });
+    Socket.on('connect', () => {
+      // 连接成功
+      Socket.emit('chat', Socket.id);
+    });
+  }
+
   return {
     fetchUserInfo,
     currentUser,
-    settings: defaultSettings,
-  };
-  // }
-
-  return {
-    fetchUserInfo,
+    allMessage,
+    Socket: Socket,
     settings: defaultSettings,
   };
 } // ProLayout 支持的api https://procomponents.ant.design/components/layout
@@ -70,7 +91,7 @@ export const layout = ({ initialState, setInitialState }) => {
       const { location } = history; // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
-        console.log('重定向');
+        console.log('没登录');
       }
     },
 

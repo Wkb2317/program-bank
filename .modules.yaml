@@ -1,0 +1,23 @@
+hoistPattern:
+  - '*'
+hoistedDependencies: {}
+included:
+  dependencies: true
+  devDependencies: true
+  optionalDependencies: true
+injectedDeps: {}
+layoutVersion: 5
+nodeLinker: isolated
+packageManager: pnpm@6.32.3
+pendingBuilds: []
+prunedAt: Tue, 05 Apr 2022 07:09:46 GMT
+publicHoistPattern:
+  - '*types*'
+  - '*eslint*'
+  - '@prettier/plugin-*'
+  - '*prettier-plugin-*'
+registries:
+  default: https://registry.npmjs.org/
+skipped: []
+storeDir: C:\Users\wkb\.pnpm-store\v3
+virtualStoreDir: C:\Users\wkb\AppData\Roaming\npm\pnpm-global\5\node_modules\.pnpm

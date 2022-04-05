@@ -1,3 +1,4 @@
+import { GlobalOutlined } from '@ant-design/icons';
 export default [
   {
     path: '/',
@@ -72,12 +73,11 @@ export default [
       },
     ],
   },
-
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
+    name: 'world',
+    icon: 'GlobalOutlined',
+    path: '/world',
+    component: './world',
   },
 
   {

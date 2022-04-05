@@ -5,12 +5,12 @@ const Settings = {
   layout: 'top',
   navTheme: 'light',
   contentWidth: 'Fixed',
-  fixedHeader: false,
+  fixedHeader: true,
   fixSiderbar: false,
   colorWeak: false,
   title: '程序设计题库',
   pwa: false,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: 'http://110.40.236.242:8001/static/logo.png',
   iconfontUrl: '',
 };
 export default Settings;
