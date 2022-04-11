@@ -23,7 +23,7 @@ const Rank = memo(() => {
   const [weekRank, setWeekRank] = useState(null);
   const [monthRank, setMonthRank] = useState(null);
 
-  const toUserIdRef = useRef('123');
+  const toUserIdRef = useRef();
 
   // const nowTime = dayjs();
   useEffect(() => {
@@ -93,6 +93,7 @@ const Rank = memo(() => {
   };
 
   const openChartDiaLog = (userId) => {
+    // console.log(userId);
     setToUserId((pre) => userId);
     toUserIdRef.current = userId;
     // console.log(toUserIdRef.current);

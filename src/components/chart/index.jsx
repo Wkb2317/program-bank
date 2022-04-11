@@ -20,9 +20,11 @@ const Chart = memo((props) => {
   const messageRef = useRef();
   const dispatch = useDispatch();
 
+  // console.log(toUserId);
+
   useEffect(() => {
-    console.log(initialState.allMessage);
-    console.log(toUserId);
+    // console.log(initialState.allMessage);
+    // console.log(toUserId);
     setMessage((e) =>
       initialState.allMessage.filter((item) => {
         return (
@@ -35,6 +37,8 @@ const Chart = memo((props) => {
     } else {
       setMessage(null);
     }
+
+    console.log(toUserId);
   }, [visible, initialState, toUserId]);
 
   useEffect(() => {

@@ -5,9 +5,11 @@ import ProList from '@ant-design/pro-list';
 import { SmileOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { getLoginIntegration } from '@/services/ant-design-pro/user';
 import style from './Welcome.less';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import tags from '../../config/tags';
 import TagOfDesign from '@/components/tag';
+import { getQuestionAction } from '../store/question/actions';
+import { set } from 'lodash';
 
 const { Header, Footer, Content } = Layout;
 
@@ -16,10 +18,26 @@ const Welcome = memo(() => {
   const dispatch = useDispatch();
   const [currentTag, setCurrentTag] = useState(0);
   const [cardActionProps, setCardActionProps] = useState('actions');
+  const [data, setData] = useState([]);
+
+  const { easyQuestions, mediumQuestions, difficultQuestions } = useSelector(
+    (state) => ({
+      easyQuestions: state.getIn(['Question', 'easy']),
+      mediumQuestions: state.getIn(['Question', 'medium']),
+      difficultQuestions: state.getIn(['Question', 'difficult']),
+    }),
+    shallowEqual,
+  );
+
+  console.log(easyQuestions);
 
   useEffect(() => {
     uuid && isFirstLoginToday(uuid);
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getQuestionAction(tags[currentTag]));
+  }, [dispatch, currentTag]);
 
   const isFirstLoginToday = async (uuid) => {
     let res = await getLoginIntegration(uuid);
@@ -37,50 +55,47 @@ const Welcome = memo(() => {
     setCurrentTag((e) => tagId);
   };
 
-  const data = [
-    '二叉树',
-    '动态规划',
-    '红黑树',
-    '贪心算法',
-    '广度优先遍历',
-    '深度优先遍历',
-    '冒泡排序',
-    '快速排序',
-  ].map((item) => ({
-    title: item,
-    subTitle: <Tag color="#5BD8A6">语雀专栏</Tag>,
-    actions: [
-      <a key="run">
-        <Popover content="收藏" trigger="hover">
-          <HeartOutlined />
-        </Popover>
-      </a>,
-      <a key="delete">
-        <Popover content="分享" trigger="hover">
-          <ShareAltOutlined />
-        </Popover>
-      </a>,
-    ],
-    avatar: 'https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg',
-    content: (
-      <div
-        style={{
-          flex: 1,
-          padding: 0,
-        }}
-      >
-        <div
-          style={{
-            width: 200,
-            padding: 0,
-          }}
-        >
-          <div>发布中</div>
-          <Progress percent={80} />
-        </div>
-      </div>
-    ),
-  }));
+  useEffect(() => {
+    const typeQuestions = [easyQuestions, mediumQuestions, difficultQuestions];
+    console.log(typeQuestions[currentTag]);
+    setData(
+      (e) =>
+        typeQuestions[currentTag] &&
+        typeQuestions[currentTag].map((item) => ({
+          title: item.title,
+          subTitle: <Tag color="#5BD8A6">{item.type}</Tag>,
+          actions: [
+            <a key="run">
+              <Popover content="收藏" trigger="hover">
+                <HeartOutlined />
+              </Popover>
+            </a>,
+            <a key="share">
+              <Popover content="分享" trigger="hover">
+                <ShareAltOutlined />
+              </Popover>
+            </a>,
+          ],
+          content: (
+            <div
+              style={{
+                flex: 1,
+                padding: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: 200,
+                  padding: 0,
+                }}
+              >
+                <div>{item.detail}</div>
+              </div>
+            </div>
+          ),
+        })),
+    );
+  }, [currentTag, easyQuestions, mediumQuestions, difficultQuestions]);
 
   return (
     <Layout>
@@ -142,7 +157,6 @@ const Welcome = memo(() => {
               title: {},
               subTitle: {},
               type: {},
-              avatar: {},
               content: {},
               actions: {
                 cardActionProps,

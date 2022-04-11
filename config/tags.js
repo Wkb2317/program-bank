@@ -1,23 +1,15 @@
 const tags = [
   {
     id: 0,
-    name: 'c语言',
+    name: '简单',
   },
   {
     id: 1,
-    name: 'c++',
+    name: '中等',
   },
   {
     id: 2,
-    name: 'java',
-  },
-  {
-    id: 3,
-    name: 'javascript',
-  },
-  {
-    id: 4,
-    name: 'python',
+    name: '困难',
   },
 ];
 
