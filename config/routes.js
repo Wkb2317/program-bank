@@ -2,10 +2,10 @@ import { GlobalOutlined } from '@ant-design/icons';
 export default [
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/question',
   },
   {
-    path: '/welcome',
+    path: '/question',
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
@@ -26,6 +26,15 @@ export default [
       },
       {
         component: './404',
+      },
+    ],
+  },
+  {
+    path: '/question',
+    routes: [
+      {
+        path: '/question/detail/:id',
+        component: './question/detail',
       },
     ],
   },

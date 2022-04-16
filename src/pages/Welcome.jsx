@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
+import { history } from 'umi';
 import { notification, Layout, Space, Progress, Tag, Button, Popover } from 'antd';
 import ProList from '@ant-design/pro-list';
 import { SmileOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
@@ -9,9 +9,8 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import tags from '../../config/tags';
 import TagOfDesign from '@/components/tag';
 import { getQuestionAction } from '../store/question/actions';
-import { set } from 'lodash';
 
-const { Header, Footer, Content } = Layout;
+const { Content } = Layout;
 
 const Welcome = memo(() => {
   const uuid = localStorage.getItem('uuid');
@@ -19,6 +18,9 @@ const Welcome = memo(() => {
   const [currentTag, setCurrentTag] = useState(0);
   const [cardActionProps, setCardActionProps] = useState('actions');
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const tagColor = ['#5BD8A6', '#FF9900', '#FF0033'];
 
   const { easyQuestions, mediumQuestions, difficultQuestions } = useSelector(
     (state) => ({
@@ -29,14 +31,12 @@ const Welcome = memo(() => {
     shallowEqual,
   );
 
-  console.log(easyQuestions);
-
   useEffect(() => {
     uuid && isFirstLoginToday(uuid);
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getQuestionAction(tags[currentTag]));
+    dispatch(getQuestionAction(currentTag));
   }, [dispatch, currentTag]);
 
   const isFirstLoginToday = async (uuid) => {
@@ -57,17 +57,17 @@ const Welcome = memo(() => {
 
   useEffect(() => {
     const typeQuestions = [easyQuestions, mediumQuestions, difficultQuestions];
-    console.log(typeQuestions[currentTag]);
     setData(
       (e) =>
         typeQuestions[currentTag] &&
         typeQuestions[currentTag].map((item) => ({
           title: item.title,
-          subTitle: <Tag color="#5BD8A6">{item.type}</Tag>,
+          subTitle: <Tag color={tagColor[item.type]}>{tags[item.type].name}</Tag>,
           actions: [
             <a key="run">
               <Popover content="收藏" trigger="hover">
                 <HeartOutlined />
+                {item.collect}
               </Popover>
             </a>,
             <a key="share">
@@ -76,6 +76,7 @@ const Welcome = memo(() => {
               </Popover>
             </a>,
           ],
+          id: item.id,
           content: (
             <div
               style={{
@@ -85,7 +86,6 @@ const Welcome = memo(() => {
             >
               <div
                 style={{
-                  width: 200,
                   padding: 0,
                 }}
               >
@@ -95,6 +95,7 @@ const Welcome = memo(() => {
           ),
         })),
     );
+    setLoading(false);
   }, [currentTag, easyQuestions, mediumQuestions, difficultQuestions]);
 
   return (
@@ -113,7 +114,6 @@ const Welcome = memo(() => {
             );
           })}
         </Space>
-
         <div
           style={{
             backgroundColor: '#eee',
@@ -122,6 +122,7 @@ const Welcome = memo(() => {
         >
           <ProList
             ghost={false}
+            loading={loading}
             itemCardProps={{
               ghost: false,
             }}
@@ -145,11 +146,8 @@ const Welcome = memo(() => {
             }}
             onItem={(record) => {
               return {
-                onMouseEnter: () => {
-                  console.log(record);
-                },
                 onClick: () => {
-                  console.log(record);
+                  history.push(`/question/detail/${record.id}`);
                 },
               };
             }}

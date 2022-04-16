@@ -1,19 +1,22 @@
 import { Map } from 'immutable';
-import { EASY, MEDIUM, DIFFICULT } from '../../../config/constant';
+import { EASY, MEDIUM, DIFFICULT, QUESTION_DETAIL } from '../../../config/constant';
 
 const initState = new Map({
   easy: [],
   medium: [],
   difficult: [],
+  questionDetail: {},
 });
 function Question(state = initState, action) {
   switch (action.type) {
-    case EASY:
+    case 0:
       return state.set('easy', action.payload);
-    case MEDIUM:
+    case 1:
       return state.set('medium', action.payload);
-    case DIFFICULT:
+    case 2:
       return state.set('difficult', action.payload);
+    case QUESTION_DETAIL:
+      return state.set('questionDetail', ...action.payload);
     default:
       return state;
   }

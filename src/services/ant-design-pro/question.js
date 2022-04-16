@@ -1,10 +1,19 @@
 import { request } from 'umi';
 
-export async function getQuestions(params) {
+export async function getQuestions(id) {
   return request('/api/getQuestions', {
     method: 'GET',
     params: {
-      type: params.name,
+      type: id,
+    },
+  });
+}
+
+export async function getQuestionDetail(id) {
+  return request('/api/getQuestionDetail', {
+    method: 'GET',
+    params: {
+      id,
     },
   });
 }

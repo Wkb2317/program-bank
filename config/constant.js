@@ -9,3 +9,5 @@ export const EASY = '简单';
 export const MEDIUM = '中等';
 
 export const DIFFICULT = '困难';
+
+export const QUESTION_DETAIL = 'question-detail';

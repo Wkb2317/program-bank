@@ -17,7 +17,7 @@ export function getCurrentUser(token) {
     currentUser(token).then((res) => {
       if (res.isLogin) {
         if (location.pathname === '/user/login') {
-          history.push('/welcome');
+          history.push('/question');
         }
         dispatch({
           type: 'currentUser',

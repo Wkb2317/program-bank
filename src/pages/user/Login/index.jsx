@@ -49,7 +49,7 @@ const Login = memo(() => {
     dispatch(setCurrentUser(userInfo));
     if (userInfo?.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
-      history.push('/welcome');
+      history.push('/question');
     } else {
       await setInitialState((s) => ({ ...s, currentUser: undefined }));
     }
