@@ -7,26 +7,62 @@
 
 .content {
   width: 50%;
-  height: 100%;
+  height: calc(100vh - 50px);
   padding: 15px;
 
   .header {
     width: 100%;
-    border-radius: 3px;
+    border-radius: 4px;
     background-color: white;
     padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .title {
-      font-size: 20px;
+      font-size: 25px;
       font-weight: bolder;
     }
+
+    .right {
+      height: 100%;
+      width: 50px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+
+      .iconBg {
+        border-radius: 5px;
+        padding: 0 2px;
+
+        &:hover {
+          background-color: #eee;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .tabCard {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 4px;
+    background-color: white;
+    padding: 20px;
   }
 }
 
 .code {
   width: 50%;
-  height: 100%;
-  background-color: #eee;
+  height: calc(100vh - 50px);
+
+  .footer {
+    height: 50px;
+    width: 100%;
+    line-height: 50px;
+    text-align: end;
+    padding-right: 10px;
+  }
 }
 
 .loading {
@@ -51,5 +87,13 @@
 
   .code {
     width: 100%;
+    padding: 0 15px 15px 15px;
+    height: auto !important;
+  }
+
+  .codeMirror {
+    height: auto;
+    border-radius: 4px;
+    overflow: hidden;
   }
 }

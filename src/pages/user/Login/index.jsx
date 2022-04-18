@@ -45,7 +45,7 @@ const Login = memo(() => {
   }, []);
 
   const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.(localStorage.getItem('token'));
+    const userInfo = await initialState?.fetchUserInfo(localStorage.getItem('token'));
     dispatch(setCurrentUser(userInfo));
     if (userInfo?.isLogin) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
@@ -56,26 +56,19 @@ const Login = memo(() => {
   };
 
   const userLogin = async (values) => {
-    // console.log(values);
-    const msg = await login({ ...values, type });
-    // console.log(msg);
-    if (msg.code === 1) {
+    let msg = await login({ ...values, type });
+    if (msg?.code === 1) {
       localStorage.setItem('token', msg.token);
       localStorage.setItem('userEmail', values.email);
-      // console.log(msg);
       localStorage.setItem('uuid', msg.id);
       const defaultLoginSuccessMessage = intl.formatMessage({
         id: 'pages.login.success',
         defaultMessage: '登录成功！',
       });
-
       await fetchUserInfo();
-
       message.success(defaultLoginSuccessMessage);
-
       return;
     }
-
     message.error('账号或密码错误，请重新登录！');
     setUserLoginState(msg);
   };
