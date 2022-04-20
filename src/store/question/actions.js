@@ -1,9 +1,9 @@
 import { getQuestions, getQuestionDetail } from '../../services/ant-design-pro/question';
 import { QUESTION_DETAIL } from '../../../config/constant';
 
-export function getQuestionAction(type) {
+export function getQuestionAction(userId, type) {
   return (dispatch) => {
-    getQuestions(type).then((res) => {
+    getQuestions(userId, type).then((res) => {
       if (res.code) {
         res.data.map((item) => {
           item.detail = item.detail.replace(/\n/g, '');

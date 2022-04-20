@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import { history } from 'umi';
-import { notification, Layout, Space, Progress, Tag, Button, Popover } from 'antd';
+import { notification, Layout, Space, message, Tag, Button, Tooltip } from 'antd';
 import ProList from '@ant-design/pro-list';
 import { SmileOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { getLoginIntegration } from '@/services/ant-design-pro/user';
@@ -9,6 +9,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import tags from '../../config/tags';
 import TagOfDesign from '@/components/tag';
 import { getQuestionAction } from '../store/question/actions';
+import { collectQuestion } from '@/services/ant-design-pro/question';
 
 const { Content } = Layout;
 
@@ -19,24 +20,35 @@ const Welcome = memo(() => {
   const [cardActionProps, setCardActionProps] = useState('actions');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [easyQuestions, setEasyQuestions] = useState([]);
+  const [mediumQuestions, setMediumQuestions] = useState([]);
+  const [difficultQuestions, setDifficultQuestions] = useState([]);
 
   const tagColor = ['#5BD8A6', '#FF9900', '#FF0033'];
 
-  const { easyQuestions, mediumQuestions, difficultQuestions } = useSelector(
+  let { easy, medium, difficult } = useSelector(
     (state) => ({
-      easyQuestions: state.getIn(['Question', 'easy']),
-      mediumQuestions: state.getIn(['Question', 'medium']),
-      difficultQuestions: state.getIn(['Question', 'difficult']),
+      easy: state.getIn(['Question', 'easy']),
+      medium: state.getIn(['Question', 'medium']),
+      difficult: state.getIn(['Question', 'difficult']),
     }),
     shallowEqual,
   );
+
+  useEffect(() => {
+    setEasyQuestions(easy);
+    setMediumQuestions(medium);
+    setDifficultQuestions(difficult);
+  }, [easy, medium, difficult]);
+
+  const typeQuestions = [easyQuestions, mediumQuestions, difficultQuestions];
 
   useEffect(() => {
     uuid && isFirstLoginToday(uuid);
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getQuestionAction(currentTag));
+    dispatch(getQuestionAction(uuid, currentTag));
   }, [dispatch, currentTag]);
 
   const isFirstLoginToday = async (uuid) => {
@@ -55,8 +67,51 @@ const Welcome = memo(() => {
     setCurrentTag((e) => tagId);
   };
 
+  const onCollectQuestion = async (id) => {
+    const newQuestion = typeQuestions[currentTag].map((item) => {
+      if (item.id == id) {
+        if (item.user_id) {
+          item.user_id = null;
+          item.collect = item.collect - 1;
+        } else {
+          item.user_id = uuid;
+          item.collect = item.collect + 1;
+        }
+      }
+      return item;
+    });
+    switch (currentTag) {
+      case 0:
+        setEasyQuestions(newQuestion);
+        break;
+      case 1:
+        setMediumQuestions(newQuestion);
+        break;
+      case 2:
+        setDifficultQuestions(newQuestion);
+        break;
+    }
+    const res = await collectQuestion(uuid, id);
+    if (!res.code) {
+      message.error('系统出现故障，请联系管理员!');
+      return;
+    }
+  };
+
+  const shareQuestion = (id) => {
+    navigator.clipboard.writeText(`${location.href}\\detail\\${id}`).then(
+      function () {
+        message.success('复制成功,快分享给你的小伙伴吧!', 3);
+      },
+      function (err) {
+        console.log(err);
+        message.error('复制失败，请手动复制链接!', 3);
+      },
+    );
+  };
+
   useEffect(() => {
-    const typeQuestions = [easyQuestions, mediumQuestions, difficultQuestions];
+    setLoading(true);
     setData(
       (e) =>
         typeQuestions[currentTag] &&
@@ -64,16 +119,20 @@ const Welcome = memo(() => {
           title: item.title,
           subTitle: <Tag color={tagColor[item.type]}>{tags[item.type].name}</Tag>,
           actions: [
-            <a key="run">
-              <Popover content="收藏" trigger="hover">
-                <HeartOutlined />
-                {item.collect}
-              </Popover>
+            <a key="run" onClick={(e) => onCollectQuestion(item.id)}>
+              <Tooltip title={item.user_id ? '取消收藏' : '收藏'} placement="top">
+                <i
+                  className={['iconfont', item.user_id ? 'icon-shoucang1' : 'icon-shoucang'].join(
+                    ' ',
+                  )}
+                ></i>
+                {item.collect ? item.collect : 0}
+              </Tooltip>
             </a>,
-            <a key="share">
-              <Popover content="分享" trigger="hover">
+            <a key="share" onClick={(e) => shareQuestion(item.id)}>
+              <Tooltip title="分享" placement="top">
                 <ShareAltOutlined />
-              </Popover>
+              </Tooltip>
             </a>,
           ],
           id: item.id,
@@ -132,7 +191,7 @@ const Welcome = memo(() => {
               showSizeChanger: false,
             }}
             showActions="allways"
-            showExtra="allways"
+            // showExtra="allways"
             rowSelection={{}}
             grid={{
               gutter: 16,
