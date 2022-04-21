@@ -1,27 +1,33 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 3339313 */
-  src: url('iconfont.woff2?t=1650439779396') format('woff2'),
-       url('iconfont.woff?t=1650439779396') format('woff'),
-       url('iconfont.ttf?t=1650439779396') format('truetype');
+  font-family: 'iconfont'; /* Project id 3339313 */
+  src: url('./iconfont.woff2') format('woff2'), url('./iconfont.woff') format('woff'),
+    url('./iconfont.ttf') format('truetype');
 }
 
 .iconfont {
-  font-family: "iconfont" !important;
+  font-family: 'iconfont' !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-beizhu:before {
+  content: '\e6c4';
+}
+
+.icon-beizhu1:before {
+  content: '\e610';
+}
+
 .icon-shoucang1:before {
-  content: "\e604";
+  content: '\e604';
 }
 
 .icon-shoucang:before {
-  content: "\eca7";
+  content: '\eca7';
 }
 
 .icon-fenxiang:before {
-  content: "\e8b0";
+  content: '\e8b0';
 }
-

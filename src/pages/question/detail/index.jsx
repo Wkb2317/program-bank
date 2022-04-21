@@ -19,12 +19,20 @@ import 'codemirror/addon/hint/javascript-hint.js';
 import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/addon/hint/anyword-hint.js';
 
-import { Layout, Spin, message, Tabs, Rate, Space, Progress, Tag, Button, Popover } from 'antd';
+import { Layout, Spin, message, Tabs, Rate, Progress, Tag, Button } from 'antd';
 import { SmileOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { getQuestionDetail, collectQuestion } from '@/services/ant-design-pro/question';
+import {
+  getQuestionDetail,
+  getSubmitHistory,
+  collectQuestion,
+  saveCode,
+  submitCode,
+} from '@/services/ant-design-pro/question';
 import { getQuestionDetailAction } from '@/store/question/actions';
 import tags from '../../../../config/tags';
+import MyTable from '@/components/table';
 import style from './index.less';
+import { set } from 'lodash';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -36,22 +44,47 @@ const Detail = memo((props) => {
 
   const dispatch = useDispatch();
   const codeMirrorRef = useRef();
+  const [currentTag, setCurrentTag] = useState('detail');
   const [questionDetail, setQuestionDetail] = useState({});
   const [isCollect, setIsCollect] = useState(0);
+  const [codeValue, setCodeValue] = useState('//Ctrl+S实时保存！');
+  const [submitHistory, setSubmitHistory] = useState([]);
 
   useEffect(async () => {
-    getQuestion(id);
+    switch (currentTag) {
+      case 'detail':
+        getQuestion();
+        break;
+      case 'comment':
+        break;
+      case 'history':
+        getSubmit();
+        break;
+      default:
+        break;
+    }
     // dispatch(getQuestionDetailAction(id));
-  }, []);
+  }, [currentTag]);
 
-  const getQuestion = async (id) => {
+  const getQuestion = async () => {
     const res = await getQuestionDetail(userId, id);
+    console.log(res);
     if (res.code) {
       setQuestionDetail(res.data[0]);
+      setCodeValue(res.data[0].save);
       res.data[0].is_collect ? setIsCollect(1) : setIsCollect(0);
     } else {
       message.error(res.msg);
     }
+  };
+
+  const getSubmit = async () => {
+    const res = await getSubmitHistory(userId, id);
+    if (res.code) {
+      setSubmitHistory(res.data);
+      return;
+    }
+    message.error(res.msg);
   };
 
   // const { questionDetail } = useSelector(
@@ -84,27 +117,33 @@ const Detail = memo((props) => {
   };
 
   const onInputRead = (cm, change) => {
-    console.log(cm);
     cm.showHint({
       completeSingle: false,
     });
-    // codeMirrorRef.current.editor.showHint();
+    // setCodeValue((_) => cm.getValue());
   };
+
+  const onCodeMirrorChange = (cm, changeObj) => {};
 
   // 添加按键 ctrl-s自动保存
   codeMirrorRef?.current?.editor?.addKeyMap(
     {
-      'Ctrl-S': function () {
-        message.success('保存成功！');
-        console.log('ctrls');
+      'Ctrl-S': async function () {
+        const res = await saveCode(userId, id, codeMirrorRef.current.editor.getValue(), isCollect);
+        res.code === 1 ? message.success(res.msg) : message.error(res.msg);
       },
     },
     false,
   );
 
   function onChangeTab(key) {
-    console.log(key);
+    setCurrentTag((_) => key);
   }
+
+  const onSubmitCode = async () => {
+    const res = await submitCode(userId, id, codeMirrorRef.current.editor.getValue());
+    res.code === 1 ? message.success(res.msg) : message.error(res.msg);
+  };
 
   const Loading = () => {
     return (
@@ -148,7 +187,7 @@ const Detail = memo((props) => {
                 讨论
               </TabPane>
               <TabPane tab="提交记录" key="history">
-                提交记录
+                <MyTable submitHistory={submitHistory}></MyTable>
               </TabPane>
             </Tabs>
           </div>
@@ -160,7 +199,8 @@ const Detail = memo((props) => {
           <CodeMirror
             ref={codeMirrorRef}
             className={style.codeMirror}
-            value="//Ctrl+S实时保存！"
+            value={codeValue}
+            onChange={(cm, changeObj) => onCodeMirrorChange(cm, changeObj)}
             onInputRead={(cm, change, editor) => onInputRead(cm, change, editor)}
             options={{
               lineNumbers: true,
@@ -182,7 +222,9 @@ const Detail = memo((props) => {
             }}
           ></CodeMirror>
           <div className={style.footer}>
-            <Button type="primary">保存并提交</Button>
+            <Button onClick={onSubmitCode} type="primary">
+              保存并提交
+            </Button>
           </div>
         </div>
       </Content>
