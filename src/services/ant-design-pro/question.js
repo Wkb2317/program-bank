@@ -72,3 +72,13 @@ export async function saveMark(markId, mark) {
     },
   });
 }
+
+export async function deleteSubmit(userId, markId) {
+  return request('/api/deleteSubmit', {
+    method: 'post',
+    data: {
+      markId,
+      userId,
+    },
+  });
+}

@@ -31,8 +31,9 @@ import {
 import { getQuestionDetailAction } from '@/store/question/actions';
 import tags from '../../../../config/tags';
 import MyTable from '@/components/table';
+import Comment from '@/components/comment';
 import style from './index.less';
-import { set } from 'lodash';
+import _ from 'lodash';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -47,7 +48,7 @@ const Detail = memo((props) => {
   const [currentTag, setCurrentTag] = useState('detail');
   const [questionDetail, setQuestionDetail] = useState({});
   const [isCollect, setIsCollect] = useState(0);
-  const [codeValue, setCodeValue] = useState('//Ctrl+S实时保存！');
+  const [codeValue, setCodeValue] = useState('');
   const [submitHistory, setSubmitHistory] = useState([]);
 
   useEffect(async () => {
@@ -71,7 +72,7 @@ const Detail = memo((props) => {
     console.log(res);
     if (res.code) {
       setQuestionDetail(res.data[0]);
-      setCodeValue(res.data[0].save);
+      setCodeValue(res.data[0].save ? res.data[0].save : '//Ctrl+S实时保存！');
       res.data[0].is_collect ? setIsCollect(1) : setIsCollect(0);
     } else {
       message.error(res.msg);
@@ -143,6 +144,13 @@ const Detail = memo((props) => {
   const onSubmitCode = async () => {
     const res = await submitCode(userId, id, codeMirrorRef.current.editor.getValue());
     res.code === 1 ? message.success(res.msg) : message.error(res.msg);
+    getSubmit();
+  };
+
+  const debunceSubmitCode = _.debounce(onSubmitCode, 300);
+
+  const onViewCode = (code) => {
+    setCodeValue(code);
   };
 
   const Loading = () => {
@@ -184,10 +192,10 @@ const Detail = memo((props) => {
                 <div className={style.detail}>{questionDetail.detail}</div>
               </TabPane>
               <TabPane tab="评论" key="comment">
-                讨论
+                <Comment id={id} />
               </TabPane>
               <TabPane tab="提交记录" key="history">
-                <MyTable submitHistory={submitHistory}></MyTable>
+                <MyTable onViewCode={onViewCode} submitHistory={submitHistory}></MyTable>
               </TabPane>
             </Tabs>
           </div>
@@ -222,7 +230,7 @@ const Detail = memo((props) => {
             }}
           ></CodeMirror>
           <div className={style.footer}>
-            <Button onClick={onSubmitCode} type="primary">
+            <Button onClick={debunceSubmitCode} type="primary">
               保存并提交
             </Button>
           </div>

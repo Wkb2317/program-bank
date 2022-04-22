@@ -1,19 +1,19 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import { Table, Space, Modal, Input, message } from 'antd';
+import { Table, Space, Modal, Input, message, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
 import style from './index.less';
-import { saveMark } from '@/services/ant-design-pro/question';
+import { saveMark, deleteSubmit } from '@/services/ant-design-pro/question';
+import { set } from 'lodash';
 
 const { TextArea } = Input;
 
 const MyTable = memo((props) => {
-  let { submitHistory } = props;
+  let { submitHistory, onViewCode } = props;
   const userId = localStorage.getItem('uuid');
 
   const [submit, setSubmit] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentId, setCurrentId] = useState(null);
   const [isMarkModalVisible, setIsMarkModalVisible] = useState(false);
   const [mark, setMark] = useState('');
   const markRef = useRef();
@@ -27,6 +27,7 @@ const MyTable = memo((props) => {
   }, [submit]);
 
   const changeData = () => {
+    setLoading(true);
     let newData = [];
     if (Object.keys(submit).length) {
       newData = submit.map((item, index) => {
@@ -76,6 +77,24 @@ const MyTable = memo((props) => {
     setMark((_) => e.target.value);
   };
 
+  const viewCode = (id) => {
+    const code = submit.find((item) => item.mark_id === id);
+    onViewCode(code.data);
+  };
+
+  const deleteHistory = async (id) => {
+    setLoading(true);
+    const res = await deleteSubmit(userId, id);
+    if (res.code) {
+      message.success(res.msg);
+      let newSubmit = submit.filter((item) => item.mark_id !== id);
+      setSubmit((_) => newSubmit);
+    } else {
+      message.error(res.msg);
+    }
+    setLoading(false);
+  };
+
   const columns = [
     {
       title: '姓名',
@@ -115,8 +134,18 @@ const MyTable = memo((props) => {
       align: 'center',
       render: (text, record) => (
         <Space size="middle">
-          <a>查看代码 </a>
-          <a>删除记录</a>
+          <a className={style.view} onClick={(e) => viewCode(record.mark_id)}>
+            查看代码{' '}
+          </a>
+
+          <Popconfirm
+            onConfirm={(e) => deleteHistory(record.mark_id)}
+            title="确认删除吗？"
+            okText="删除"
+            cancelText="取消"
+          >
+            <a className={style.delete}>删除记录</a>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -124,7 +153,7 @@ const MyTable = memo((props) => {
 
   return (
     <div>
-      <Table loading={loading} columns={columns} dataSource={data} />;
+      <Table pagination={{ pageSize: 5 }} loading={loading} columns={columns} dataSource={data} />;
       <Modal
         title="添加备注"
         centered
