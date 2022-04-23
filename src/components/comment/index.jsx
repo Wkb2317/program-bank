@@ -1,20 +1,35 @@
-import { memo, useState, useEffect, createElement, dangerouslySetInnerHTML } from 'react';
-import { LikeOutlined, LikeFilled } from '@ant-design/icons';
-import { Comment, Tooltip, List, Button, message } from 'antd';
+import { memo, useState, useEffect, dangerouslySetInnerHTML } from 'react';
+import {
+  LikeOutlined,
+  LikeFilled,
+  MessageOutlined,
+  FormOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+import { Comment, Tooltip, List, Button, message, Popconfirm } from 'antd';
+import Editor from '../editor';
+import {
+  submitComment,
+  getComment,
+  likeComment,
+  deleteComment,
+} from '@/services/ant-design-pro/comment';
+import getDateDiff from '@/utils/getDateDiff';
 import moment from 'moment';
-import '@wangeditor/editor/dist/css/style.css';
-import { Editor, Toolbar } from '@wangeditor/editor-for-react';
-import { IDomEditor, IEditorConfig, DomEditor } from '@wangeditor/editor';
-import { toolbarConfig } from './config';
-import { submitComment, getComment } from '@/services/ant-design-pro/comment';
+import style from './index.less';
 
 export default memo((props) => {
-  const { id } = props;
-  const userId = localStorage.getItem('uuid');
-  const [editor, setEditor] = useState(IDomEditor); // 存储 editor 实例
-  const [html, setHtml] = useState(''); // 编辑器内容
   const [comment, setComment] = useState([]);
   const [formatComment, setFormatComment] = useState([]);
+  const [isShowReply, setIsShowReply] = useState(false);
+
+  const { id } = props;
+  const userId = localStorage.getItem('uuid');
+
+  // setTimeout(() => {
+  //   const toolbar = DomEditor.getToolbar(editor);
+  //   console.log(toolbar.getConfig().toolbarKeys);
+  // }, 2000);
 
   useEffect(() => {
     getAllComment();
@@ -26,6 +41,7 @@ export default memo((props) => {
 
   const getAllComment = async () => {
     const res = await getComment(userId, id);
+    console.log(res);
     setComment(res.data);
   };
 
@@ -33,21 +49,44 @@ export default memo((props) => {
     setFormatComment((_) =>
       comment.map((item, index) => {
         let temp = {};
-        temp.actions = [
-          <span onClick={like}>
-            <LikeOutlined></LikeOutlined>
-            <span className="comment-action">{100}</span>
-          </span>,
-          <span key="comment-list-reply-to-0">回复</span>,
-        ];
+        temp.actions = isShowReply
+          ? []
+          : [
+              <span onClick={(e) => like(item.comment_id)}>
+                {item.isLike ? <LikeFilled></LikeFilled> : <LikeOutlined></LikeOutlined>}
+                <span className={style.margL3}>{item.zan_count}</span>
+              </span>,
+              <span className={style.margL5}>
+                <MessageOutlined />
+                <span className={style.margL3}>查看{23}条回复</span>
+              </span>,
+              <span className={style.margL5}>
+                <FormOutlined />
+                <span className={style.margL3}>回复</span>
+              </span>,
 
+              item.user_id === userId ? (
+                <Popconfirm
+                  onConfirm={(e) => onDeleteComment(item.comment_id)}
+                  title="确认删除吗？"
+                  okText="删除"
+                  cancelText="取消"
+                >
+                  <span className={style.margL5}>
+                    <DeleteOutlined />
+                    <span className={style.margL3}>删除</span>
+                  </span>
+                </Popconfirm>
+              ) : (
+                ''
+              ),
+            ];
         temp.avatar = item.avatar;
         temp.author = item.name;
-
         temp.content = <p dangerouslySetInnerHTML={{ __html: item.content }}></p>;
         temp.datetime = (
-          <Tooltip title={moment(item.time).format('YYYY-MM-DD HH:mm:ss')}>
-            <span>{moment().subtract(1, 'days').fromNow()}</span>
+          <Tooltip title={moment(item.comment_time).format('YYYY-MM-DD HH:mm:ss')}>
+            <span>{getDateDiff(item.comment_time)}</span>
           </Tooltip>
         );
         return temp;
@@ -55,57 +94,56 @@ export default memo((props) => {
     );
   };
 
-  const submit = _.debounce(async () => {
-    if (!editor.getText()) {
+  const submit = _.debounce(async (editor, html) => {
+    if (!editor.getText().trim()) {
       message.error('请输入内容...');
       return;
     }
     const res = await submitComment(userId, id, html);
     if (res.code) {
       message.success(res.msg);
+      getAllComment();
     } else {
       message.error(res.msg);
     }
   }, 300);
 
-  const editorConfig = {
-    placeholder: '请输入内容...',
-  };
+  const like = _.debounce(async (commentId) => {
+    const res = await likeComment(userId, commentId);
+    if (res.code) {
+      setComment((e) =>
+        comment.map((item) => {
+          if (item.comment_id === commentId) {
+            if (item.isLike) {
+              item.isLike = 0;
+              item.zan_count = item.zan_count - 1;
+            } else {
+              item.isLike = 1;
+              item.zan_count = item.zan_count + 1;
+            }
+          }
+          return item;
+        }),
+      );
+    } else {
+      message.error(res.msg);
+    }
+  }, 300);
 
-  // 及时销毁 editor ，重要！
-  useEffect(() => {
-    return () => {
-      if (editor == null) return;
-      editor.destroy();
-      setEditor(null);
-    };
-  }, [editor]);
-
-  const like = () => {
-    console.log('like');
+  const onDeleteComment = async (commentId) => {
+    const res = await deleteComment(commentId);
+    console.log(res);
+    if (res.code) {
+      message.success(res.msg);
+      setComment((e) => comment.filter((item) => item.comment_id !== commentId));
+    } else {
+      message.error(res.msg);
+    }
   };
 
   return (
     <>
-      <div style={{ border: '1px solid #ccc', zIndex: 100 }}>
-        <Toolbar
-          editor={editor}
-          defaultConfig={toolbarConfig}
-          mode="default"
-          style={{ borderBottom: '1px solid #ccc' }}
-        />
-        <Editor
-          defaultConfig={editorConfig}
-          value={html}
-          onCreated={setEditor}
-          onChange={(editor) => setHtml(editor.getHtml())}
-          mode="default"
-          style={{ height: '200px', overflowY: 'auto' }}
-        />
-      </div>
-      <Button style={{ marginTop: 10 }} onClick={submit} type="primary">
-        提交
-      </Button>
+      <Editor submit={submit} isShowCancel={false} confirmText={'回复'}></Editor>
       <List
         className="comment-list"
         header={`${comment.length} 条评论`}

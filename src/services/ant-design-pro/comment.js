@@ -20,3 +20,22 @@ export async function getComment(userId, questionId) {
     },
   });
 }
+
+export async function likeComment(userId, commentId) {
+  return request('/api/likeComment', {
+    method: 'post',
+    data: {
+      userId,
+      commentId,
+    },
+  });
+}
+
+export async function deleteComment(commentId) {
+  return request('/api/deleteComment', {
+    method: 'post',
+    data: {
+      commentId,
+    },
+  });
+}

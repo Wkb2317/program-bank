@@ -16,6 +16,7 @@ const toolbarConfig = {
     'group-image',
     'group-video',
     'insertTable',
+    'emotion',
   ],
 };
 
