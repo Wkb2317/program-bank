@@ -6,7 +6,7 @@ import { toolbarConfig } from './config';
 import { Button } from 'antd';
 
 const WangEditor = memo((props) => {
-  const { submit, cancel, isShowCancel, confirmText } = props;
+  const { submit, onCancel, isShowCancel, confirmText } = props;
   const [editor, setEditor] = useState(IDomEditor); // 存储 editor 实例
   const [html, setHtml] = useState(''); // 编辑器内容
 
@@ -41,7 +41,7 @@ const WangEditor = memo((props) => {
       />
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         {isShowCancel ? (
-          <Button onClick={cancel} size="small">
+          <Button onClick={onCancel} size="small">
             取消
           </Button>
         ) : (

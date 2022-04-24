@@ -39,3 +39,32 @@ export async function deleteComment(commentId) {
     },
   });
 }
+
+export async function submitReply(commentId, userId, content) {
+  return request('/api/submitReply', {
+    method: 'post',
+    data: {
+      commentId,
+      userId,
+      content,
+    },
+  });
+}
+
+export async function getReply(commentId) {
+  return request('/api/getReply', {
+    method: 'get',
+    params: {
+      commentId,
+    },
+  });
+}
+
+export async function deleteReply(id) {
+  return request('/api/deleteReply', {
+    method: 'post',
+    data: {
+      id,
+    },
+  });
+}
