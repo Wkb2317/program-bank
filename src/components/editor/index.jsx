@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect, useImperativeHandle } from 'react';
 import '@wangeditor/editor/dist/css/style.css';
 import { Editor, Toolbar } from '@wangeditor/editor-for-react';
 import { IDomEditor, IEditorConfig, DomEditor } from '@wangeditor/editor';
@@ -6,7 +6,7 @@ import { toolbarConfig } from './config';
 import { Button } from 'antd';
 
 const WangEditor = memo((props) => {
-  const { submit, onCancel, isShowCancel, confirmText } = props;
+  const { submit, onCancel, isShowCancel, confirmText, index } = props;
   const [editor, setEditor] = useState(IDomEditor); // 存储 editor 实例
   const [html, setHtml] = useState(''); // 编辑器内容
 
@@ -22,6 +22,16 @@ const WangEditor = memo((props) => {
       setEditor(null);
     };
   }, [editor]);
+
+  useImperativeHandle(props.onRef, () => {
+    return {
+      clearInputValue: clearInputValue,
+    };
+  });
+
+  const clearInputValue = () => {
+    setHtml('');
+  };
 
   return (
     <div style={{ border: '1px solid #ccc', zIndex: 100 }}>
@@ -49,7 +59,7 @@ const WangEditor = memo((props) => {
         )}
 
         <Button
-          onClick={(e) => submit(editor, html)}
+          onClick={(e) => submit(editor, html, index)}
           style={{ marginLeft: '8px' }}
           type="primary"
           size="small"

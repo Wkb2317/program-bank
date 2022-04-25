@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, dangerouslySetInnerHTML } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import {
   LikeOutlined,
   LikeFilled,
@@ -23,6 +23,7 @@ import style from './index.less';
 import _ from 'lodash';
 
 export default memo((props) => {
+  const editorRef = useRef();
   const [comment, setComment] = useState([]);
   const [formatComment, setFormatComment] = useState([]);
   const [isShowReply, setIsShowReply] = useState([]);
@@ -41,8 +42,8 @@ export default memo((props) => {
   }, []);
 
   useEffect(() => {
-    setIsShowReply((e) => e.fill(false, 0, comment.length));
-    setIsShowComment((e) => e.fill(false, 0, comment.length));
+    setIsShowReply((e) => [].fill(false, 0, comment.length));
+    setIsShowComment((e) => [].fill(false, 0, comment.length));
     changeComment(comment);
   }, [comment]);
 
@@ -55,7 +56,9 @@ export default memo((props) => {
     let newShowReply = isShowReply;
     newShowReply[index] = !newShowReply[index];
     setIsShowReply((e) => newShowReply);
-    changeComment(comment);
+    let newComment = _.cloneDeep(comment);
+
+    changeComment(newComment);
   };
 
   const controlCommentShow = (reply, index) => {
@@ -64,32 +67,48 @@ export default memo((props) => {
     setIsShowComment((e) => newShowComment);
     let newComment = _.cloneDeep(comment);
     newComment[index].children = reply;
-    changeComment(newComment);
+    newComment[index].reply_count = reply.length;
+    setComment((_) => newComment);
   };
 
-  const onGetReply = async (commentId, index) => {
+  const switcDisplayEditor = (index, isAdd) => {
+    let newShowReply = isShowReply;
+    newShowReply[index] = !newShowReply[index];
+    setIsShowReply((e) => newShowReply);
+    if (isAdd) {
+      let newComment = _.cloneDeep(comment);
+      newComment[index].reply_count += 1;
+      changeComment(newComment);
+      return;
+    }
+    changeComment(comment);
+  };
+
+  const onGetReply = async (commentId, index, isDelete) => {
     const res = await getReply(commentId);
     if (res.code) {
-      console.log(res.data);
-      controlCommentShow(res.data, index);
+      console.log('reply', res.data);
+      controlCommentShow(res.data, index, isDelete);
     }
   };
 
   const onCloseReply = (index) => {
-    isShowComment[index] = !isShowComment[index];
-    setIsShowComment((e) => isShowComment);
+    let newShowComment = isShowComment;
+    newShowComment[index] = !newShowComment[index];
+    setIsShowComment((e) => newShowComment);
     changeComment(comment);
   };
 
   const onReply = (comment_id, index) => {
-    controlEditorShow(index);
+    switcDisplayEditor(index);
   };
 
   const onDeleteReply = async (reply_index, reply_id, index) => {
     const res = await deleteReply(reply_index);
     if (res.code) {
-      message.success('删除成功！');
-      onGetReply(reply_id, index);
+      message.success(res.msg);
+      onGetReply(reply_id, index, true);
+      return;
     }
     message.error(res.msg);
   };
@@ -98,7 +117,7 @@ export default memo((props) => {
     controlEditorShow(index);
   };
 
-  const onSubmitReply = _.debounce(async (editor, html, commentId) => {
+  const onSubmitReply = _.debounce(async (editor, html, commentId, index) => {
     if (!editor.getText().trim()) {
       message.error('请输入内容...');
       return;
@@ -106,7 +125,7 @@ export default memo((props) => {
     const res = await submitReply(commentId, userId, html);
     if (res.code) {
       message.success(res.msg);
-      getAllComment();
+      switcDisplayEditor(index, true);
     } else {
       message.error(res.msg);
     }
@@ -119,7 +138,10 @@ export default memo((props) => {
         temp.actions = isShowReply[index]
           ? [
               <Editor
-                submit={(editor, html) => onSubmitReply(editor, html, item.comment_id)}
+                submit={(editor, html, index) =>
+                  onSubmitReply(editor, html, item.comment_id, index)
+                }
+                index={index}
                 onCancel={(e) => onCancel(index)}
                 isShowCancel={true}
                 confirmText={'回复'}
@@ -226,6 +248,7 @@ export default memo((props) => {
     const res = await submitComment(userId, id, html);
     if (res.code) {
       message.success(res.msg);
+      editorRef.current.clearInputValue();
       getAllComment();
     } else {
       message.error(res.msg);
@@ -267,7 +290,7 @@ export default memo((props) => {
 
   return (
     <>
-      <Editor submit={submit} isShowCancel={false} confirmText={'回复'}></Editor>
+      <Editor onRef={editorRef} submit={submit} isShowCancel={false} confirmText={'回复'}></Editor>
       <List
         className="comment-list"
         header={`${comment.length} 条评论`}
