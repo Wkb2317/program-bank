@@ -87,6 +87,23 @@ export default [
     icon: 'GlobalOutlined',
     path: '/world',
     component: './world',
+    routes: [
+      {
+        path: '/world',
+        redirect: '/world/discuss',
+      },
+      {
+        path: '/world/discuss',
+        component: './world/discuss',
+      },
+    ],
+  },
+
+  {
+    name: 'uploadQuestion',
+    icon: 'UploadOutlined',
+    path: '/uploadQuestion',
+    component: './uploadQuestion',
   },
 
   {

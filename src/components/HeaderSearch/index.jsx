@@ -1,79 +1,48 @@
+import React, { useRef, useState } from 'react';
+
 import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
-import useMergedState from 'rc-util/es/hooks/useMergedState';
-import React, { useRef } from 'react';
-import classNames from 'classnames';
+import { getLikeQuestion } from '@/services/ant-design-pro/question';
 import styles from './index.less';
+import _ from 'lodash';
+import { history } from 'umi';
 
 const HeaderSearch = (props) => {
-  const {
-    className,
-    defaultValue,
-    onVisibleChange,
-    placeholder,
-    visible,
-    defaultVisible,
-    ...restProps
-  } = props;
   const inputRef = useRef(null);
-  const [value, setValue] = useMergedState(defaultValue, {
-    value: props.value,
-    onChange: props.onChange,
-  });
-  const [searchMode, setSearchMode] = useMergedState(defaultVisible ?? false, {
-    value: props.visible,
-    onChange: onVisibleChange,
-  });
-  const inputClass = classNames(styles.input, {
-    [styles.show]: searchMode,
-  });
-  return (
-    <div
-      className={classNames(className, styles.headerSearch)}
-      onClick={() => {
-        setSearchMode(true);
+  const [options, setOptions] = useState([]);
 
-        if (searchMode && inputRef.current) {
-          inputRef.current.focus();
-        }
-      }}
-      onTransitionEnd={({ propertyName }) => {
-        if (propertyName === 'width' && !searchMode) {
-          if (onVisibleChange) {
-            onVisibleChange(searchMode);
-          }
-        }
-      }}
-    >
-      <SearchOutlined
-        key="Icon"
-        style={{
-          cursor: 'pointer',
-        }}
-      />
-      <AutoComplete
-        key="AutoComplete"
-        className={inputClass}
-        value={value}
-        options={restProps.options}
-        onChange={setValue}
-      >
+  const onInput = _.debounce(async (e) => {
+    const res = await getLikeQuestion(e.target.value);
+    if (res.code) {
+      let optionData = res.data.map((item) => {
+        return {
+          lable: item.id,
+          value: item.title,
+        };
+      });
+      setOptions(optionData);
+    }
+  }, 100);
+
+  const onSelect = (value, option) => {
+    console.log(option);
+    history.push(`/question/detail/${option.lable}`);
+  };
+
+  return (
+    <div>
+      <AutoComplete options={options} onSelect={(value, option) => onSelect(value, option)}>
         <Input
           size="small"
           ref={inputRef}
-          defaultValue={defaultValue}
-          aria-label={placeholder}
-          placeholder={placeholder}
+          aria-label="题目搜索"
+          placeholder="题目搜索"
+          onInput={(e) => onInput(e)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              if (restProps.onSearch) {
-                restProps.onSearch(value);
-              }
             }
           }}
-          onBlur={() => {
-            setSearchMode(false);
-          }}
+          onBlur={() => {}}
         />
       </AutoComplete>
     </div>

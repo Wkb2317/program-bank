@@ -82,3 +82,12 @@ export async function deleteSubmit(userId, markId) {
     },
   });
 }
+
+export async function getLikeQuestion(data) {
+  return request('/api/getLikeQuestion', {
+    method: 'get',
+    params: {
+      data,
+    },
+  });
+}

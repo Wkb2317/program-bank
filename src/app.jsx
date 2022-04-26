@@ -28,6 +28,7 @@ export const initialStateConfig = {
 export async function getInitialState() {
   const token = window.localStorage.getItem('token');
   const uuid = window.localStorage.getItem('uuid');
+
   let allMessage = [];
   let currentUser = {};
   let Socket = null;
@@ -36,6 +37,7 @@ export async function getInitialState() {
     try {
       const msg = await queryCurrentUser(token);
       if (msg.isLogin) {
+        localStorage.setItem('userInfo', JSON.stringify(msg));
         return msg;
       } else {
         history.push(loginPath);

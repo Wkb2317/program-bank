@@ -68,3 +68,19 @@ export async function deleteReply(id) {
     },
   });
 }
+
+export async function getDiscuss() {
+  return request('/api/getDiscuss', {
+    method: 'get',
+  });
+}
+
+export async function submitDiscuss(userId, data) {
+  return request('/api/submitDiscuss', {
+    method: 'post',
+    data: {
+      userId,
+      data,
+    },
+  });
+}

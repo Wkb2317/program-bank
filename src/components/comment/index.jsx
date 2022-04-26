@@ -78,6 +78,9 @@ export default memo((props) => {
     if (isAdd) {
       let newComment = _.cloneDeep(comment);
       newComment[index].reply_count += 1;
+      let newShowComment = isShowComment;
+      newShowComment[index] = false;
+      setIsShowComment((e) => newShowComment);
       changeComment(newComment);
       return;
     }
@@ -104,6 +107,7 @@ export default memo((props) => {
   };
 
   const onDeleteReply = async (reply_index, reply_id, index) => {
+    console.log(reply_id);
     const res = await deleteReply(reply_index);
     if (res.code) {
       message.success(res.msg);
@@ -202,18 +206,18 @@ export default memo((props) => {
           <>
             {isShowComment[index]
               ? item?.children
-                ? item.children.map((item, cindex) => {
+                ? item.children.map((citem, cindex) => {
                     return (
                       <Comment
                         key={cindex}
-                        content={<p dangerouslySetInnerHTML={{ __html: item.reply_content }}></p>}
-                        author={item.name}
-                        avatar={item.avatar}
+                        content={<p dangerouslySetInnerHTML={{ __html: citem.reply_content }}></p>}
+                        author={citem.name}
+                        avatar={citem.avatar}
                         actions={[
-                          item.from_userid === userId ? (
+                          citem.from_userid === userId ? (
                             <Popconfirm
                               onConfirm={(e) =>
-                                onDeleteReply(item.reply_index, item.reply_id, index)
+                                onDeleteReply(citem.reply_index, item.comment_id, index)
                               }
                               title="确认删除吗？"
                               okText="删除"
@@ -292,6 +296,12 @@ export default memo((props) => {
     <>
       <Editor onRef={editorRef} submit={submit} isShowCancel={false} confirmText={'回复'}></Editor>
       <List
+        pagination={{
+          onChange: (page) => {
+            // console.log(page);
+          },
+          pageSize: 5,
+        }}
         className="comment-list"
         header={`${comment.length} 条评论`}
         itemLayout="horizontal"

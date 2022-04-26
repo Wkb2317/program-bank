@@ -65,7 +65,7 @@ const Detail = memo((props) => {
         break;
     }
     // dispatch(getQuestionDetailAction(id));
-  }, [currentTag]);
+  }, [currentTag, id]);
 
   const getQuestion = async () => {
     const res = await getQuestionDetail(userId, id);
