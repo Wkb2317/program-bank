@@ -3,14 +3,12 @@ import { Table, Space, Modal, Input, message, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
 import style from './index.less';
 import { saveMark, deleteSubmit } from '@/services/ant-design-pro/question';
-import { set } from 'lodash';
 
 const { TextArea } = Input;
 
 const MyTable = memo((props) => {
   let { submitHistory, onViewCode } = props;
   const userId = localStorage.getItem('uuid');
-
   const [submit, setSubmit] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);

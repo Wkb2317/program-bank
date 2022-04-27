@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useEffect } from 'react';
 import { Button, Result, Avatar, Tag, Input } from 'antd';
 import { CrownOutlined, UserOutlined, SmileOutlined } from '@ant-design/icons';
 import ProLayout, { PageContainer } from '@ant-design/pro-layout';
@@ -30,6 +30,10 @@ const defaultProps = {
 
 export default memo((props) => {
   const [pathname, setPathname] = useState('/account/profile');
+  useEffect(() => {
+    const path = location.pathname;
+    setPathname((e) => path);
+  }, []);
   return (
     <>
       <ProLayout

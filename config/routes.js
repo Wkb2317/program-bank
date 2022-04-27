@@ -102,8 +102,22 @@ export default [
   {
     name: 'uploadQuestion',
     icon: 'UploadOutlined',
-    path: '/uploadQuestion',
+    path: '/upload',
     component: './uploadQuestion',
+    routes: [
+      {
+        path: '/upload',
+        redirect: '/upload/question',
+      },
+      {
+        path: '/upload/question',
+        component: './uploadQuestion/upload',
+      },
+      {
+        path: '/upload/history',
+        component: './uploadQuestion/history',
+      },
+    ],
   },
 
   {
