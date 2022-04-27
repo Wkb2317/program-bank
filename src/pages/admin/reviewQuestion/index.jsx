@@ -1,16 +1,30 @@
-import { memo, useEffect, useState, useRef } from 'react';
-import { Card, Table, Input, Button, Select, Space, Popconfirm, Tag, message } from 'antd';
-import { getUploadQuestion, deleteUploadQuestion } from '@/services/ant-design-pro/uploadQuestion';
+import React, { memo, useEffect, useState, useRef } from 'react';
+import { Card, Table, Space, Modal, Form, Input, Tag, message, Select } from 'antd';
+import { getQuestion, reviewQuestion } from '@/services/ant-design-pro/review';
 import dayjs from 'dayjs';
 
-const UplodaHistory = memo(() => {
+const { Option } = Select;
+
+const ReviewQuestion = memo(() => {
   const userId = localStorage.getItem('uuid');
   const [loading, setLoading] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [data, setData] = useState([]);
+  const [questionId, setQuestionId] = useState(null);
+  const formRef = useRef();
 
   useEffect(() => {
-    getHistory();
+    getAllReviewQuestions();
   }, []);
+
+  const layout = {
+    labelCol: { span: 2 },
+    wrapperCol: { span: 16 },
+  };
+
+  const validateMessages = {
+    required: '${label} 请填写完整!',
+  };
 
   const columns = [
     {
@@ -23,8 +37,8 @@ const UplodaHistory = memo(() => {
       title: '详情',
       align: 'center',
       dataIndex: 'detail',
+      width: '300px',
       key: 'detail',
-      ellipsis: true,
     },
     {
       title: '提交时间',
@@ -59,23 +73,26 @@ const UplodaHistory = memo(() => {
       align: 'center',
       render: (text, record) => (
         <Space size="middle">
-          <Popconfirm
-            onConfirm={(e) => onDeleteHistory(record.id)}
-            title="确认删除吗？"
-            okText="删除"
-            cancelText="取消"
-          >
-            <a> 删除记录</a>
-          </Popconfirm>
+          <a onClick={(e) => showModal(record.id)}>审批</a>
         </Space>
       ),
     },
   ];
 
+  const showModal = (id) => {
+    setQuestionId(id);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    formRef.current.resetFields();
+    setIsModalVisible(false);
+  };
+
   // request
-  const getHistory = async () => {
+  const getAllReviewQuestions = async () => {
     setLoading(true);
-    const res = await getUploadQuestion(userId);
+    const res = await getQuestion();
     console.log(res);
     if (res.code) {
       let newData = [];
@@ -94,22 +111,38 @@ const UplodaHistory = memo(() => {
     setLoading((_) => false);
   };
 
-  const onDeleteHistory = async (id) => {
-    const res = await deleteUploadQuestion(id);
+  const onSubmit = async () => {
+    const value = formRef.current.getFieldValue();
+    const res = await reviewQuestion(questionId, value);
     if (res.code) {
       message.success(res.msg);
-      let newData = data.filter((item) => item.id !== id);
-      setData((e) => newData);
+      getAllReviewQuestions();
+      setIsModalVisible(false);
       return;
     }
     message.error(res.msg);
+    setIsModalVisible(false);
   };
 
   return (
-    <Card title="提交记录">
+    <Card title="题目审核">
       <Table pagination={{ pageSize: 5 }} loading={loading} columns={columns} dataSource={data} />
+      <Modal title="审核" visible={isModalVisible} onOk={onSubmit} onCancel={handleCancel}>
+        <Form ref={formRef} {...layout} name="nest-messages" validateMessages={validateMessages}>
+          <Form.Item name={['status']} label="类型" rules={[{ required: true }]}>
+            <Select style={{ width: 120 }}>
+              <Option value="1">通过</Option>
+              <Option value="2">不通过</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name={['mark']} label="备注">
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Card>
   );
 });
 
-export default UplodaHistory;
+export default ReviewQuestion;

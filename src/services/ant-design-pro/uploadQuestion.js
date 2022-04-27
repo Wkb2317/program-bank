@@ -22,3 +22,12 @@ export async function getUploadQuestion(userId) {
     },
   });
 }
+
+export async function deleteUploadQuestion(id) {
+  return request('/api/deleteUploadQuestion', {
+    method: 'post',
+    data: {
+      id,
+    },
+  });
+}

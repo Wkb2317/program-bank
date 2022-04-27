@@ -44,13 +44,15 @@ export default [
     name: 'admin',
     icon: 'crown',
     access: 'canAdmin',
-    component: './Admin',
+    component: './admin',
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
+        path: '/admin',
+        redirect: '/admin/review',
+      },
+      {
+        path: '/admin/review',
+        component: './admin/reviewQuestion',
       },
       {
         component: './404',

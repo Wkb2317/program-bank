@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Card, Form, Input, InputNumber, Button, message, Select } from 'antd';
-import { uploadQuestion } from '@/services/ant-design-pro/uploadQuestion';
+import { uploadQuestion, deleteUploadQuestion } from '@/services/ant-design-pro/uploadQuestion';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRef } from 'react';
@@ -54,7 +54,7 @@ const upload = memo(() => {
         </Form.Item>
 
         <Form.Item name={['question', 'detail']} label="描述" rules={[{ required: true }]}>
-          <Input.TextArea showCount maxLength={200} style={{ height: 120 }} />
+          <Input.TextArea showCount maxLength={400} style={{ height: 120 }} />
         </Form.Item>
 
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 2 }}>
