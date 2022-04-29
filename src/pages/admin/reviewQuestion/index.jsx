@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 const ReviewQuestion = memo(() => {
+  const tagColor = ['#5BD8A6', '#FF9900', '#FF0033'];
   const userId = localStorage.getItem('uuid');
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -30,6 +31,7 @@ const ReviewQuestion = memo(() => {
     {
       title: '题目',
       align: 'center',
+      width: '200px',
       dataIndex: 'title',
       key: 'name',
     },
@@ -37,8 +39,23 @@ const ReviewQuestion = memo(() => {
       title: '详情',
       align: 'center',
       dataIndex: 'detail',
-      width: '300px',
+      width: '800px',
       key: 'detail',
+    },
+    {
+      title: '类型',
+      align: 'center',
+      key: 'detail',
+      render: (text, record) => {
+        switch (record.type) {
+          case '0':
+            return <Tag color={tagColor[0]}>简单</Tag>;
+          case '1':
+            return <Tag color={tagColor[1]}>中等</Tag>;
+          case '2':
+            return <Tag color={tagColor[2]}>困难</Tag>;
+        }
+      },
     },
     {
       title: '提交时间',
@@ -93,7 +110,6 @@ const ReviewQuestion = memo(() => {
   const getAllReviewQuestions = async () => {
     setLoading(true);
     const res = await getQuestion();
-    console.log(res);
     if (res.code) {
       let newData = [];
       if (Object.keys(res.data).length) {

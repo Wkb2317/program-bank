@@ -23,7 +23,6 @@ const upload = memo(() => {
   const onSubmit = async (value) => {
     console.log(formRef);
     const res = await uploadQuestion(value.question, userId);
-    console.log(res);
     if (res.code) {
       message.success(res.msg);
       formRef.current.resetFields();

@@ -106,7 +106,7 @@ const Detail = memo((props) => {
   };
 
   const shareQuestion = () => {
-    navigator.clipboard.writeText(location.href).then(
+    navigator.clipboard(location.href).then(
       function () {
         message.success('复制成功,快分享给你的小伙伴吧!', 3);
       },

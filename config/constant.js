@@ -11,3 +11,5 @@ export const MEDIUM = '中等';
 export const DIFFICULT = '困难';
 
 export const QUESTION_DETAIL = 'question-detail';
+
+export const tagColor = ['#5BD8A6', '#FF9900', '#FF0033'];

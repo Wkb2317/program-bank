@@ -23,11 +23,15 @@ export async function getUploadQuestion(userId) {
   });
 }
 
-export async function deleteUploadQuestion(id) {
-  return request('/api/deleteUploadQuestion', {
+export async function updateQuestion(id, { title, detail, type }) {
+  return request('/api/updateQuestion', {
     method: 'post',
     data: {
       id,
+      title,
+      detail,
+      type,
+      time: moment().format('YYYY-MM-DD HH:mm:ss'),
     },
   });
 }
