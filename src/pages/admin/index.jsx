@@ -1,29 +1,40 @@
 import React, { useState, memo, useEffect } from 'react';
 import { Input, Button, Result, Avatar, Tag } from 'antd';
-import { FormOutlined, CrownOutlined, UploadOutlined, FileTextOutlined } from '@ant-design/icons';
+import {
+  FormOutlined,
+  UsergroupAddOutlined,
+  UploadOutlined,
+  FileTextOutlined,
+} from '@ant-design/icons';
 import ProLayout, { PageContainer } from '@ant-design/pro-layout';
 import { history } from 'umi';
 import './index.less';
 
-const defaultProps = {
-  routes: [
-    {
-      path: '/admin/review',
-      name: '题目审核',
-      icon: <FormOutlined />,
-      component: './admin/reviewQuestion',
-    },
-    // {
-    //   path: '/upload/history',
-    //   name: '上传记录',
-    //   icon: <FileTextOutlined />,
-    //   component: './uploadQuestion/history',
-    // },
-  ],
-};
-
 export default memo((props) => {
   const [pathname, setPathname] = useState('/admin/review');
+
+  const defaultProps = {
+    routes: [
+      {
+        path: '/admin/userManage',
+        name: '用户管理',
+        icon: <UsergroupAddOutlined />,
+        component: './admin/userManage',
+      },
+      {
+        path: '/admin/review',
+        name: '题目审核',
+        icon: <FormOutlined />,
+        component: './admin/reviewQuestion',
+      },
+      {
+        path: '/admin/comment',
+        name: '评论审核',
+        icon: <FormOutlined />,
+        component: './admin/reviewComment',
+      },
+    ],
+  };
 
   useEffect(() => {
     const path = location.pathname;

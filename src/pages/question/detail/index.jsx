@@ -34,6 +34,7 @@ import MyTable from '@/components/table';
 import Comment from '@/components/comment';
 import style from './index.less';
 import _ from 'lodash';
+import { copy } from '@/utils/tools';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -106,15 +107,7 @@ const Detail = memo((props) => {
   };
 
   const shareQuestion = () => {
-    navigator.clipboard(location.href).then(
-      function () {
-        message.success('复制成功,快分享给你的小伙伴吧!', 3);
-      },
-      function (err) {
-        console.log(err);
-        message.error('复制失败，请手动复制链接!', 3);
-      },
-    );
+    copy(location.href);
   };
 
   const onInputRead = (cm, change) => {

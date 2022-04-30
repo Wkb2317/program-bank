@@ -151,7 +151,7 @@ const MyTable = memo((props) => {
 
   return (
     <div>
-      <Table pagination={{ pageSize: 5 }} loading={loading} columns={columns} dataSource={data} />;
+      <Table pagination={{ pageSize: 5 }} loading={loading} columns={columns} dataSource={data} />
       <Modal
         title="添加备注"
         centered

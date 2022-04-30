@@ -51,8 +51,19 @@ export default [
         redirect: '/admin/review',
       },
       {
+        name: 'review',
         path: '/admin/review',
         component: './admin/reviewQuestion',
+      },
+      {
+        name: 'userManage',
+        path: '/admin/userManage',
+        component: './admin/userManage',
+      },
+      {
+        name: 'reviewComment',
+        path: '/admin/comment',
+        component: './admin/reviewComment',
       },
       {
         component: './404',
@@ -71,16 +82,28 @@ export default [
         redirect: '/account/profile',
       },
       {
+        name: 'profile',
         path: '/account/profile',
         component: './account/profile',
+        icon: 'CrownOutlined',
       },
       {
+        name: 'score',
         path: '/account/score',
         component: './account/score',
+        icon: 'UserOutlined',
       },
       {
+        name: 'rank',
         path: '/account/rank',
         component: './account/rank',
+        icon: 'SmileOutlined',
+      },
+      {
+        name: 'collect',
+        path: '/account/collect',
+        component: './account/collect',
+        icon: 'SmileOutlined',
       },
     ],
   },
@@ -95,6 +118,7 @@ export default [
         redirect: '/world/discuss',
       },
       {
+        name: 'discuss',
         path: '/world/discuss',
         component: './world/discuss',
       },
@@ -113,10 +137,12 @@ export default [
       },
       {
         path: '/upload/question',
+        name: 'upload',
         component: './uploadQuestion/upload',
       },
       {
         path: '/upload/history',
+        name: 'history',
         component: './uploadQuestion/history',
       },
     ],

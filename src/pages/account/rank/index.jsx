@@ -96,7 +96,6 @@ const Rank = memo(() => {
     // console.log(userId);
     setToUserId((pre) => userId);
     toUserIdRef.current = userId;
-    // console.log(toUserIdRef.current);
     setChartVisbale((pre) => true);
   };
 

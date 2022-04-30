@@ -3,8 +3,8 @@ import { Button, Result, Avatar, Tag, Input } from 'antd';
 import { CrownOutlined, UserOutlined, SmileOutlined } from '@ant-design/icons';
 import ProLayout, { PageContainer } from '@ant-design/pro-layout';
 import { history } from 'umi';
-
 import './index.less';
+
 const defaultProps = {
   routes: [
     {
@@ -25,10 +25,17 @@ const defaultProps = {
       icon: <SmileOutlined />,
       component: './account/rank',
     },
+    {
+      name: '题目收藏',
+      path: '/account/collect',
+      component: './account/collect',
+      icon: <SmileOutlined />,
+    },
   ],
 };
 
 export default memo((props) => {
+  console.log();
   const [pathname, setPathname] = useState('/account/profile');
   useEffect(() => {
     const path = location.pathname;
@@ -38,6 +45,7 @@ export default memo((props) => {
     <>
       <ProLayout
         route={defaultProps}
+        // route={props.route}
         location={{
           pathname,
         }}

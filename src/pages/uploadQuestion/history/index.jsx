@@ -61,6 +61,7 @@ const UplodaHistory = memo(() => {
     {
       title: '题目',
       align: 'center',
+      width: '200px',
       dataIndex: 'title',
       key: 'name',
     },
@@ -69,7 +70,7 @@ const UplodaHistory = memo(() => {
       align: 'center',
       dataIndex: 'detail',
       key: 'detail',
-      ellipsis: true,
+      width: '800px',
     },
     {
       title: '类型',

@@ -10,6 +10,7 @@ import tags from '../../config/tags';
 import TagOfDesign from '@/components/tag';
 import { getQuestionAction } from '../store/question/actions';
 import { collectQuestion } from '@/services/ant-design-pro/question';
+import { copy } from '@/utils/tools';
 
 const { Content } = Layout;
 
@@ -99,15 +100,7 @@ const Welcome = memo(() => {
   };
 
   const shareQuestion = (id) => {
-    navigator.clipboard.writeText(`${location.href}\\detail\\${id}`).then(
-      function () {
-        message.success('复制成功,快分享给你的小伙伴吧!', 3);
-      },
-      function (err) {
-        console.log(err);
-        message.error('复制失败，请手动复制链接!', 3);
-      },
-    );
+    copy(`${location.href}\\detail\\${id}`);
   };
 
   useEffect(() => {

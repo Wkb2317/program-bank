@@ -1,15 +1,20 @@
 import { useEffect } from 'react';
 import { SettingDrawer } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { history, Link } from 'umi';
+import { Menu, SubMenu } from 'antd';
+import { history, Link, useAccess } from 'umi';
 import { Provider } from 'react-redux';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import { BookOutlined, LinkOutlined } from '@ant-design/icons';
+import {
+  SmileOutlined,
+  GlobalOutlined,
+  ToTopOutlined,
+  UserOutlined,
+  CrownOutlined,
+} from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
-const isDev = process.env.NODE_ENV === 'development';
-const loginPath = '/user/login';
 import './app.less';
 import { store } from './store/index';
 import { setCurrentUser } from './store/user/actions';
@@ -17,6 +22,8 @@ import { useDispatch } from 'react-redux';
 import io from 'socket.io-client';
 import { getAllMessage } from '@/services/ant-design-pro/socket';
 /** 获取用户信息比较慢的时候会展示一个 loading */
+
+const loginPath = '/user/login';
 
 export const initialStateConfig = {
   loading: <PageLoading />,
@@ -29,8 +36,8 @@ export async function getInitialState() {
   const token = window.localStorage.getItem('token');
   const uuid = window.localStorage.getItem('uuid');
 
-  let allMessage = [];
-  let currentUser = {};
+  let allMessage = null;
+  let currentUser = null;
   let Socket = null;
 
   const fetchUserInfo = async (token) => {
@@ -45,16 +52,14 @@ export async function getInitialState() {
     } catch (error) {
       history.push(loginPath);
     }
-
     return undefined;
   };
 
-  if (token) {
-    currentUser = await fetchUserInfo(token);
-  }
-
   // 不是登录界面
   if (history.location.pathname !== loginPath) {
+    if (token) {
+      currentUser = await fetchUserInfo(token);
+    }
     const res = await getAllMessage(uuid);
     res.code === 1 ? (allMessage = res.data) : (allMessage = []);
 
@@ -98,6 +103,37 @@ export const layout = ({ initialState, setInitialState }) => {
     },
 
     menuHeaderRender: undefined,
+    headerContentRender: () => (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Menu
+          mode="horizontal"
+          selectedKeys={[location.pathname ?? '/']}
+          onClick={({ key }) => history.push(key)}
+          className={'header'}
+          style={{ height: '100%', border: 0, display: 'flex', alignItems: 'center' }}
+        >
+          <Menu.Item key="/question" icon={<SmileOutlined />}>
+            首页
+          </Menu.Item>
+          <Menu.Item key="/world" icon={<GlobalOutlined />}>
+            小世界
+          </Menu.Item>
+          <Menu.Item key="/upload" icon={<ToTopOutlined />}>
+            题目推荐
+          </Menu.Item>
+          <Menu.Item key="/account" icon={<UserOutlined />}>
+            个人中心
+          </Menu.Item>
+          {initialState.currentUser.access === 'admin' ? (
+            <Menu.Item key="/admin" icon={<CrownOutlined />}>
+              管理页
+            </Menu.Item>
+          ) : (
+            <></>
+          )}
+        </Menu>
+      </div>
+    ),
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态

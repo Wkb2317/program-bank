@@ -91,3 +91,12 @@ export async function getLikeQuestion(data) {
     },
   });
 }
+
+export async function getCollectQuestion(userId) {
+  return request('/api/getCollectQuestion', {
+    method: 'get',
+    params: {
+      userId,
+    },
+  });
+}

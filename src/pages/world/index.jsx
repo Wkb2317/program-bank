@@ -3,21 +3,23 @@ import { Input, Button, Result, Avatar, Tag } from 'antd';
 import { CrownOutlined, MessageOutlined, SmileOutlined } from '@ant-design/icons';
 import ProLayout, { PageContainer } from '@ant-design/pro-layout';
 import { history } from 'umi';
+import Settings from '../../../config/sildeSetting';
 import './index.less';
-
-const defaultProps = {
-  routes: [
-    {
-      path: '/world/discuss',
-      name: '讨论角',
-      icon: <MessageOutlined />,
-      component: './world/discuss',
-    },
-  ],
-};
 
 export default memo((props) => {
   const [pathname, setPathname] = useState('/world/discuss');
+
+  const defaultProps = {
+    routes: [
+      {
+        path: '/world/discuss',
+        name: '讨论角',
+        icon: <MessageOutlined />,
+        component: './world/discuss',
+      },
+    ],
+  };
+
   return (
     <>
       <ProLayout

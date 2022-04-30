@@ -6,7 +6,7 @@ const Settings = {
   navTheme: 'light',
   contentWidth: 'Fluid',
   fixedHeader: false,
-  fixSiderbar: true,
+  fixSiderbar: false,
   colorWeak: false,
   title: '程序设计题库',
   pwa: false,
