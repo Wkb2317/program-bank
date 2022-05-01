@@ -79,7 +79,6 @@ const Login = memo(() => {
       return;
     }
     const res = await updatePassword(values);
-    // console.log(res);
     switch (res.code) {
       case 0:
         message.error(res.msg);
@@ -138,7 +137,6 @@ const Login = memo(() => {
   };
 
   const handleGetCaptcha = async (email) => {
-    // console.log(process.env);
     if (email === '') return;
     const result = await getCaptcha({
       email,

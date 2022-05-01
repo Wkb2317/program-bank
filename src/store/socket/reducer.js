@@ -10,10 +10,6 @@ export default function (store = initStore, action) {
       return store.set('socket', action.payload);
     case types.ALL_MESSAGE:
       return store.set('allMessage', action.payload);
-    case types.CHANGE_MESSAGE:
-      let oldMessage = store.get('allMessage');
-      console.log(oldMessage);
-      return store.set('allMessage', [...oldMessage, action.payload]);
     default:
       return store;
   }

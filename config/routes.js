@@ -94,9 +94,9 @@ export default [
         icon: 'UserOutlined',
       },
       {
-        name: 'rank',
-        path: '/account/rank',
-        component: './account/rank',
+        name: 'message',
+        path: '/account/message',
+        component: './account/message',
         icon: 'SmileOutlined',
       },
       {
@@ -121,6 +121,11 @@ export default [
         name: 'discuss',
         path: '/world/discuss',
         component: './world/discuss',
+      },
+      {
+        name: 'rank',
+        path: '/world/rank',
+        component: './world/rank',
       },
     ],
   },

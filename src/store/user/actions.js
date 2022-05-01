@@ -25,7 +25,6 @@ export function getCurrentUser(token) {
         });
       } else {
         message.error('请重新登录！');
-        console.log(location.pathname);
         if (location.pathname !== '/user/login') {
           history.push('/user/login');
         }

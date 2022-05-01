@@ -20,10 +20,10 @@ const defaultProps = {
       component: './account/score',
     },
     {
-      path: '/account/rank',
-      name: '积分排行',
+      path: '/account/message',
+      name: '消息通知',
       icon: <SmileOutlined />,
-      component: './account/rank',
+      component: './account/message',
     },
     {
       name: '题目收藏',
@@ -45,7 +45,6 @@ export default memo((props) => {
     <>
       <ProLayout
         route={defaultProps}
-        // route={props.route}
         location={{
           pathname,
         }}

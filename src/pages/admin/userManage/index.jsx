@@ -25,7 +25,6 @@ const UserManage = memo(() => {
 
   const changeTableData = () => {
     if (AllUserData.length) {
-      console.log(AllUserData);
       let newData = AllUserData.map((item) => {
         item.registerTime = dayjs(item.registerTime).format('YYYY-MM-DD HH:mm:ss');
         item.key = item.id;
@@ -37,7 +36,6 @@ const UserManage = memo(() => {
   };
 
   const onChangeAccess = async (checked, changeUserId, index) => {
-    console.log(checked, changeUserId);
     const res = await changeUserAccess(changeUserId, checked);
     if (res.code) {
       let newTable = _.cloneDeep(tableData);
@@ -81,12 +79,14 @@ const UserManage = memo(() => {
       align: 'center',
       dataIndex: 'registerTime',
       key: 'registerTime',
+      sorter: (a, b) => (a.registerTime > b.registerTime ? 1 : -1),
     },
     {
       title: '积分',
       align: 'center',
       dataIndex: 'integration',
       key: 'integration',
+      sorter: (a, b) => a.integration - b.integration,
     },
     {
       title: '管理员',

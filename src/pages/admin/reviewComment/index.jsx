@@ -24,7 +24,6 @@ const ReviewComment = memo(() => {
   useEffect(async () => {
     const res = await getCommentAndReply();
     if (res.code) {
-      console.log(res.data);
       setCommentData((e) => res.data);
       return;
     }

@@ -6,58 +6,76 @@ import _ from 'lodash';
 import dayjs from 'dayjs';
 import { useModel } from 'umi';
 import style from './index.less';
-// import { getAllMeaageAction } from '@/store/socket/actions';
+import { getAllMeaageAction, changMessageAction } from '@/store/socket/actions';
+import { readMessage } from '@/services/ant-design-pro/socket';
 
 const { TextArea } = Input;
 const Chart = memo((props) => {
   const { visible, onClose, toUserId } = props;
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { initialState, loading, refresh, setInitialState } = useModel('@@initialState');
   const { Socket } = initialState;
   const localUserId = localStorage.getItem('uuid');
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState([]);
   const chartRef = useRef();
   const messageRef = useRef();
+  const allMessageRef = useRef();
   const dispatch = useDispatch();
 
+  let { allMessage } = useSelector((state) => ({
+    allMessage: state.getIn(['Socket', 'allMessage']),
+    shallowEqual,
+  }));
+
+  allMessageRef.current = allMessage;
+
   useEffect(() => {
-    setMessage((e) =>
-      initialState.allMessage.filter((item) => {
-        return (
-          (item.from_id === localUserId && item.to_id === toUserId) ||
-          (item.from_id === toUserId && item.to_id === localUserId)
-        );
-      }),
-    );
     if (visible) {
+      setMessage((e) =>
+        allMessage.filter((item) => {
+          return (
+            (item.from_id === localUserId && item.to_id === toUserId) ||
+            (item.from_id === toUserId && item.to_id === localUserId)
+          );
+        }),
+      );
     } else {
       setMessage(null);
     }
-  }, [visible, initialState, toUserId]);
+  }, [visible, allMessage, toUserId]);
+
+  useEffect(async () => {
+    if (visible) {
+      let newAllMessage = _.cloneDeep(allMessage);
+      newAllMessage.forEach((item) => {
+        if (item.from_id == toUserId) {
+          item.is_read = 'true';
+        }
+      });
+      dispatch(changMessageAction(newAllMessage));
+      const res = await readMessage(localUserId, toUserId);
+    }
+  }, [visible]);
 
   useEffect(() => {
-    // dispatch(getAllMeaageAction(localUserId, toUserId));
+    chartRef.current.style.display = visible ? 'block' : 'none';
     setTimeout(() => {
       scrollToBottom();
-    }, 200);
-    chartRef.current.style.display = visible ? 'block' : 'none';
-  }, [visible, dispatch, toUserId]);
+    }, 100);
+  }, [visible, toUserId]);
 
-  // 接收消息
+  // 接收消息;
   useEffect(() => {
     Socket &&
       Socket.on('getMessage', (msg) => {
-        console.log(`接收到---${msg.from_user_name}---信息`);
-        console.log(msg);
-        setMessage((e) => [...e, msg]);
         setTimeout(() => {
           scrollToBottom();
-        }, 100);
+        }, 200);
       });
     return () => {
       Socket && Socket.off('getMessage');
     };
-  }, [dispatch, Socket]);
+  }, [Socket]);
 
   // 滚动到底部
   const scrollToBottom = () => {
@@ -76,14 +94,15 @@ const Chart = memo((props) => {
       to_user_avatar: '',
       to_user_name: '',
       time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      is_read: 'fasle',
     };
-    console.log(params);
-    setMessage((e) => [...e, params]);
+    Socket && Socket.emit('sendMessage', JSON.stringify(params));
+    let newAllMessage = [...allMessageRef.current, params];
+    dispatch(changMessageAction(newAllMessage));
+
     setTimeout(() => {
       scrollToBottom();
-    }, 100);
-
-    Socket && Socket.emit('sendMessage', JSON.stringify(params));
+    }, 200);
     // dispatch(getAllMeaageAction(localUserId, toUserId));
     setInputValue((e) => null);
   };

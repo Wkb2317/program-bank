@@ -18,9 +18,12 @@ import defaultSettings from '../config/defaultSettings';
 import './app.less';
 import { store } from './store/index';
 import { setCurrentUser } from './store/user/actions';
-import { useDispatch } from 'react-redux';
-import io from 'socket.io-client';
+import { getAllMeaageAction, changMessageAction } from '@/store/socket/actions';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import io, { managers } from 'socket.io-client';
 import { getAllMessage } from '@/services/ant-design-pro/socket';
+import _ from 'lodash';
+import { useRef } from 'react';
 /** 获取用户信息比较慢的时候会展示一个 loading */
 
 const loginPath = '/user/login';
@@ -60,7 +63,7 @@ export async function getInitialState() {
     if (token) {
       currentUser = await fetchUserInfo(token);
     }
-    const res = await getAllMessage(uuid);
+    const res = await getAllMessage();
     res.code === 1 ? (allMessage = res.data) : (allMessage = []);
 
     // prod : ws://110.40.236.242:8001/
@@ -96,9 +99,9 @@ export const layout = ({ initialState, setInitialState }) => {
     // footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history; // 如果没有登录，重定向到 login
+
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
-        console.log('没登录');
       }
     },
 
@@ -124,7 +127,7 @@ export const layout = ({ initialState, setInitialState }) => {
           <Menu.Item key="/account" icon={<UserOutlined />}>
             个人中心
           </Menu.Item>
-          {initialState.currentUser.access === 'admin' ? (
+          {initialState.currentUser?.access === 'admin' ? (
             <Menu.Item key="/admin" icon={<CrownOutlined />}>
               管理页
             </Menu.Item>
@@ -138,23 +141,42 @@ export const layout = ({ initialState, setInitialState }) => {
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
     childrenRender: (children, props) => {
-      // if (initialState?.loading) return <PageLoading />;
+      const userId = localStorage.getItem('uuid');
+      const dispatch = useDispatch();
+      const allMessageRef = useRef();
 
-      return (
-        <Provider store={store}>
-          {children}
-          {/* {!props.location?.pathname?.includes('/login') && (
-            <SettingDrawer
-              enableDarkTheme
-              settings={initialState?.settings}
-              onSettingChange={(settings) => {
-                setInitialState((preInitialState) => ({ ...preInitialState, settings }));
-              }}
-            />
-          )} */}
-        </Provider>
-      );
+      useEffect(() => {
+        dispatch(getAllMeaageAction(userId));
+      }, [dispatch]);
+
+      let { allMessage } = useSelector((state) => ({
+        allMessage: state.getIn(['Socket', 'allMessage']),
+        shallowEqual,
+      }));
+
+      useEffect(() => {
+        allMessageRef.current = allMessage;
+      }, [allMessage]);
+
+      // 接收消息;
+      useEffect(() => {
+        initialState.Socket &&
+          initialState.Socket.on('getMessage', (msg) => {
+            managers.is_read = 'false';
+            let newAllMessage = [...allMessageRef.current, msg];
+            console.log(newAllMessage.length);
+            dispatch(changMessageAction(newAllMessage));
+          });
+        return () => {
+          Socket && Socket.off('getMessage');
+        };
+      }, []);
+      return <div>{children}</div>;
     },
     ...initialState?.settings,
   };
+};
+
+export const rootContainer = (children) => {
+  return <Provider store={store}>{children}</Provider>;
 };

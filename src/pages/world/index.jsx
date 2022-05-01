@@ -1,6 +1,6 @@
 import React, { useState, memo } from 'react';
 import { Input, Button, Result, Avatar, Tag } from 'antd';
-import { CrownOutlined, MessageOutlined, SmileOutlined } from '@ant-design/icons';
+import { CrownOutlined, MessageOutlined, FundProjectionScreenOutlined } from '@ant-design/icons';
 import ProLayout, { PageContainer } from '@ant-design/pro-layout';
 import { history } from 'umi';
 import Settings from '../../../config/sildeSetting';
@@ -11,6 +11,12 @@ export default memo((props) => {
 
   const defaultProps = {
     routes: [
+      {
+        path: '/world/rank',
+        name: '激励榜',
+        icon: <FundProjectionScreenOutlined />,
+        component: './world/rank',
+      },
       {
         path: '/world/discuss',
         name: '讨论角',

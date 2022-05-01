@@ -152,7 +152,7 @@ const UplodaHistory = memo(() => {
     if (res.code) {
       message.success(res.msg);
       let newData = data.map((item) => {
-        if ((item.id = questionId)) {
+        if (item.id === questionId) {
           item.title = formData.title;
           item.detail = formData.detail;
           item.type = formData.type;

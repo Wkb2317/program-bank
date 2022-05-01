@@ -9,10 +9,9 @@ export function changeSocket(socket) {
   };
 }
 
-export function getAllMeaageAction(localUserId, toUserId) {
+export function getAllMeaageAction(localUserId) {
   return (dispatch) => {
-    getAllMessage(localUserId, toUserId).then((res) => {
-      // console.log(res);
+    getAllMessage(localUserId).then((res) => {
       if (res.code) {
         dispatch({
           type: types.ALL_MESSAGE,
@@ -25,9 +24,9 @@ export function getAllMeaageAction(localUserId, toUserId) {
   };
 }
 
-export function changMessage(message) {
+export function changMessageAction(newAllMessage) {
   return {
-    type: types.CHANGE_MESSAGE,
-    payload: message,
+    type: types.ALL_MESSAGE,
+    payload: newAllMessage,
   };
 }
