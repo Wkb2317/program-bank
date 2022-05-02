@@ -1,9 +1,9 @@
 import { memo, useEffect, useState } from 'react';
 import { history } from 'umi';
-import { notification, Layout, Space, message, Tag, Button, Tooltip } from 'antd';
+import { notification, Layout, Space, message, Tag, Button, Tooltip, Card, Row, Col } from 'antd';
 import ProList from '@ant-design/pro-list';
 import { SmileOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { getLoginIntegration } from '@/services/ant-design-pro/user';
+import { getLoginIntegration, getWeekRank } from '@/services/ant-design-pro/user';
 import style from './Welcome.less';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import tags from '../../config/tags';
@@ -11,6 +11,7 @@ import TagOfDesign from '@/components/tag';
 import { getQuestionAction } from '../store/question/actions';
 import { collectQuestion } from '@/services/ant-design-pro/question';
 import { copy } from '@/utils/tools';
+import moment from 'moment';
 
 const { Content } = Layout;
 
@@ -24,6 +25,7 @@ const Welcome = memo(() => {
   const [easyQuestions, setEasyQuestions] = useState([]);
   const [mediumQuestions, setMediumQuestions] = useState([]);
   const [difficultQuestions, setDifficultQuestions] = useState([]);
+  const [weekRank, setWeekRank] = useState(null);
 
   const tagColor = ['#5BD8A6', '#FF9900', '#FF0033'];
 
@@ -51,6 +53,71 @@ const Welcome = memo(() => {
   useEffect(() => {
     dispatch(getQuestionAction(uuid, currentTag));
   }, [dispatch, currentTag]);
+
+  useEffect(() => {
+    setLoading(true);
+    setData(
+      (e) =>
+        typeQuestions[currentTag] &&
+        typeQuestions[currentTag].map((item) => ({
+          title: item.title,
+          subTitle: <Tag color={tagColor[item.type]}>{tags[item.type].name}</Tag>,
+          actions: [
+            <a key="run" onClick={(e) => onCollectQuestion(item.id)}>
+              <Tooltip title={item.user_id ? '取消收藏' : '收藏'} placement="top">
+                <i
+                  className={['iconfont', item.user_id ? 'icon-shoucang1' : 'icon-shoucang'].join(
+                    ' ',
+                  )}
+                ></i>
+                {item.collect ? item.collect : 0}
+              </Tooltip>
+            </a>,
+            <a key="share" onClick={(e) => shareQuestion(item.id)}>
+              <Tooltip title="分享" placement="top">
+                <ShareAltOutlined />
+              </Tooltip>
+            </a>,
+          ],
+          id: item.id,
+          content: (
+            <div
+              style={{
+                flex: 1,
+                padding: 0,
+              }}
+            >
+              <div
+                style={{
+                  padding: 0,
+                }}
+              >
+                <div>{item.detail}</div>
+              </div>
+            </div>
+          ),
+        })),
+    );
+    setLoading(false);
+  }, [currentTag, easyQuestions, mediumQuestions, difficultQuestions]);
+
+  useEffect(async () => {
+    const weekOfday = moment().format('E'); //计算今天是这周第几天
+    const last_monday = moment()
+      .subtract(weekOfday - 1, 'days')
+      .format('YYYY-MM-DD'); //周一日期
+    const last_sunday = moment()
+      .add(7 - weekOfday, 'days')
+      .format('YYYY-MM-DD'); //周日日期
+
+    let res = await getWeekRank(last_monday, last_sunday);
+    if (!res.code) {
+      setWeekRank((_) => null);
+      message.error(res.msg);
+      return;
+    }
+    setWeekRank((_) => res.data);
+  }, []);
 
   const isFirstLoginToday = async (uuid) => {
     let res = await getLoginIntegration(uuid);
@@ -103,53 +170,6 @@ const Welcome = memo(() => {
     copy(`${location.href}\\detail\\${id}`);
   };
 
-  useEffect(() => {
-    setLoading(true);
-    setData(
-      (e) =>
-        typeQuestions[currentTag] &&
-        typeQuestions[currentTag].map((item) => ({
-          title: item.title,
-          subTitle: <Tag color={tagColor[item.type]}>{tags[item.type].name}</Tag>,
-          actions: [
-            <a key="run" onClick={(e) => onCollectQuestion(item.id)}>
-              <Tooltip title={item.user_id ? '取消收藏' : '收藏'} placement="top">
-                <i
-                  className={['iconfont', item.user_id ? 'icon-shoucang1' : 'icon-shoucang'].join(
-                    ' ',
-                  )}
-                ></i>
-                {item.collect ? item.collect : 0}
-              </Tooltip>
-            </a>,
-            <a key="share" onClick={(e) => shareQuestion(item.id)}>
-              <Tooltip title="分享" placement="top">
-                <ShareAltOutlined />
-              </Tooltip>
-            </a>,
-          ],
-          id: item.id,
-          content: (
-            <div
-              style={{
-                flex: 1,
-                padding: 0,
-              }}
-            >
-              <div
-                style={{
-                  padding: 0,
-                }}
-              >
-                <div>{item.detail}</div>
-              </div>
-            </div>
-          ),
-        })),
-    );
-    setLoading(false);
-  }, [currentTag, easyQuestions, mediumQuestions, difficultQuestions]);
-
   return (
     <Layout>
       <Content style={{ padding: 20 }}>
@@ -166,56 +186,90 @@ const Welcome = memo(() => {
             );
           })}
         </Space>
-        <div
+        <Row
           style={{
             backgroundColor: '#eee',
             marginTop: 20,
           }}
+          gutter={{ xs: 10, sm: 16, md: 24 }}
+          wrap={true}
         >
-          <ProList
-            ghost={false}
-            loading={loading}
-            itemCardProps={{
-              ghost: false,
-            }}
-            className={style.padding_0}
-            pagination={{
-              defaultPageSize: 8,
-              showSizeChanger: false,
-            }}
-            showActions="allways"
-            // showExtra="allways"
-            rowSelection={{}}
-            grid={{
-              gutter: 16,
-              column: 3,
-              xs: 1,
-              sm: 2,
-              md: 2,
-              lg: 2,
-              xl: 3,
-              xxl: 3,
-            }}
-            onItem={(record) => {
-              return {
-                onClick: () => {
-                  history.push(`/question/detail/${record.id}`);
+          <Col xs={24} lg={18}>
+            <ProList
+              ghost={false}
+              loading={loading}
+              itemCardProps={{
+                ghost: false,
+              }}
+              className={style.padding_0}
+              pagination={{
+                defaultPageSize: 8,
+                showSizeChanger: false,
+              }}
+              showActions="allways"
+              // showExtra="allways"
+              rowSelection={{}}
+              grid={{
+                gutter: 16,
+                column: 3,
+                xs: 1,
+                sm: 2,
+                md: 2,
+                lg: 2,
+                xl: 3,
+                xxl: 3,
+              }}
+              onItem={(record) => {
+                return {
+                  onClick: () => {
+                    history.push(`/question/detail/${record.id}`);
+                  },
+                };
+              }}
+              metas={{
+                title: {},
+                subTitle: {},
+                type: {},
+                content: {},
+                actions: {
+                  cardActionProps,
                 },
-              };
-            }}
-            metas={{
-              title: {},
-              subTitle: {},
-              type: {},
-              content: {},
-              actions: {
-                cardActionProps,
-              },
-            }}
-            headerTitle="题目列表"
-            dataSource={data}
-          />
-        </div>
+              }}
+              headerTitle="题目列表"
+              dataSource={data}
+            />
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card
+              title="本周排行"
+              bordered={false}
+              style={{ width: '100%' }}
+              extra={<a href="/world/rank">更多</a>}
+            >
+              {weekRank &&
+                weekRank.map((item, index) => (
+                  <div key={item.id} className={style.totalRank}>
+                    <div className={style.userinfo}>
+                      <img
+                        onClick={(e) => openChartDiaLog(item.id)}
+                        className={style.avatar}
+                        src={item.avatar}
+                        alt=""
+                      />
+                      <div>
+                        <div>
+                          <span>{item?.name}</span>
+                          <span style={{ marginLeft: 10 }}>{item?.class}</span>
+                        </div>
+                        <div>积分: {item.value}</div>
+                      </div>
+                    </div>
+                    <div>Top {index + 1}</div>
+                  </div>
+                ))}
+            </Card>
+          </Col>
+        </Row>
       </Content>
     </Layout>
   );

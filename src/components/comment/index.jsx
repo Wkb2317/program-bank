@@ -21,6 +21,7 @@ import getDateDiff from '@/utils/getDateDiff';
 import moment from 'moment';
 import style from './index.less';
 import _ from 'lodash';
+import Chart from '../chart';
 
 export default memo((props) => {
   const editorRef = useRef();
@@ -28,6 +29,8 @@ export default memo((props) => {
   const [formatComment, setFormatComment] = useState([]);
   const [isShowReply, setIsShowReply] = useState([]);
   const [isShowComment, setIsShowComment] = useState([]);
+  const [chartVisable, setChartVisbale] = useState(false);
+  const toUserIdRef = useRef();
 
   const { id } = props;
   const userId = localStorage.getItem('uuid');
@@ -135,6 +138,16 @@ export default memo((props) => {
     }
   }, 300);
 
+  const openChart = (listItem) => {
+    toUserIdRef.current = listItem.user_id;
+    console.log(listItem);
+    setChartVisbale((pre) => true);
+  };
+
+  const closeChartDiaLog = () => {
+    setChartVisbale((pre) => false);
+  };
+
   const changeComment = (data) => {
     setFormatComment((_) =>
       data.map((item, index) => {
@@ -178,6 +191,7 @@ export default memo((props) => {
                 <FormOutlined />
                 <span className={style.margL3}>回复</span>
               </span>,
+              <span onClick={(e) => openChart(item)}>聊天</span>,
               item.user_id === userId ? (
                 <Popconfirm
                   onConfirm={(e) => onDeleteComment(item.comment_id)}
@@ -262,20 +276,19 @@ export default memo((props) => {
   const like = _.debounce(async (commentId) => {
     const res = await likeComment(userId, commentId);
     if (res.code) {
-      setComment((e) =>
-        comment.map((item) => {
-          if (item.comment_id === commentId) {
-            if (item.isLike) {
-              item.isLike = 0;
-              item.zan_count = item.zan_count - 1;
-            } else {
-              item.isLike = 1;
-              item.zan_count = item.zan_count + 1;
-            }
+      let newComment = comment.map((item) => {
+        if (item.comment_id === commentId) {
+          if (item.isLike) {
+            item.isLike = 0;
+            item.zan_count = item.zan_count - 1;
+          } else {
+            item.isLike = 1;
+            item.zan_count = item.zan_count + 1;
           }
-          return item;
-        }),
-      );
+        }
+        return item;
+      });
+      changeComment(newComment);
     } else {
       message.error(res.msg);
     }
@@ -317,6 +330,11 @@ export default memo((props) => {
           </li>
         )}
       />
+      <Chart
+        visible={chartVisable}
+        toUserId={toUserIdRef.current}
+        onClose={closeChartDiaLog}
+      ></Chart>
     </>
   );
 });

@@ -5,12 +5,15 @@ import { submitDiscuss, getDiscuss } from '@/services/ant-design-pro/comment';
 import _ from 'lodash';
 import moment from 'moment';
 const { TextArea } = Input;
+import Chart from '@/components/chart';
 
 const discuss = memo(() => {
   const userId = localStorage.getItem('uuid');
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [inputData, setInputData] = useState('');
   const [discussData, setDiscussData] = useState([]);
+  const [chartVisable, setChartVisbale] = useState(false);
+  const toUserIdRef = useRef();
 
   useEffect(() => {
     getDiscussData();
@@ -61,6 +64,16 @@ const discuss = memo(() => {
     }
     message.error(res.msg);
   };
+
+  const closeChartDiaLog = () => {
+    setChartVisbale((pre) => false);
+  };
+
+  const openChart = (listItem) => {
+    toUserIdRef.current = listItem.user_id;
+    setChartVisbale((e) => true);
+  };
+
   return (
     <Card title="讨论角" className={style.wrapper}>
       <List
@@ -71,8 +84,12 @@ const discuss = memo(() => {
         renderItem={(item) => (
           <List.Item>
             <List.Item.Meta
-              avatar={<Avatar src={item.avatar} />}
-              title={<a>{item.name + '   ' + moment(item.time).format('YYYY-MM-DD HH:mm:ss')}</a>}
+              avatar={<Avatar onClick={(e) => openChart(item)} src={item.avatar} />}
+              title={
+                <a onClick={(e) => openChart(item)}>
+                  {item.name + '   ' + moment(item.time).format('YYYY-MM-DD HH:mm:ss')}
+                </a>
+              }
               description={item.data}
             />
           </List.Item>
@@ -90,6 +107,11 @@ const discuss = memo(() => {
           提交
         </Button>
       </div>
+      <Chart
+        visible={chartVisable}
+        toUserId={toUserIdRef.current}
+        onClose={closeChartDiaLog}
+      ></Chart>
     </Card>
   );
 });

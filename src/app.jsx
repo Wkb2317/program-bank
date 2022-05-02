@@ -168,7 +168,7 @@ export const layout = ({ initialState, setInitialState }) => {
             dispatch(changMessageAction(newAllMessage));
           });
         return () => {
-          Socket && Socket.off('getMessage');
+          initialState.Socket && initialState.Socket.off('getMessage');
         };
       }, []);
       return <div>{children}</div>;
