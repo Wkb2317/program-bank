@@ -71,7 +71,6 @@ const Profile = memo(function profile() {
       ...s,
       currentUser: Object.assign(initialState.currentUser, values),
     }));
-    // console.log(initialState.currentUser);
     setIsModalVisible(false);
   };
 

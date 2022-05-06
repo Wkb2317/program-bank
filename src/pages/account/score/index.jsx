@@ -10,7 +10,7 @@ const Score = memo(() => {
   const [loading, setLoading] = useState(true);
   const type = {
     login: '每日登录',
-    write: '解答题目',
+    submitQuestion: '上传题目',
   };
 
   useEffect(async () => {

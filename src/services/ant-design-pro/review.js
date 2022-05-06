@@ -7,13 +7,14 @@ export async function getQuestion() {
   });
 }
 
-export async function reviewQuestion(id, { status, mark }) {
+export async function reviewQuestion(id, { status, mark }, userId) {
   return request('/api/review/reviewQuestion', {
     method: 'post',
     data: {
       id,
       status,
       mark,
+      userId,
     },
   });
 }

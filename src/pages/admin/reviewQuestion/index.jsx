@@ -129,7 +129,8 @@ const ReviewQuestion = memo(() => {
 
   const onSubmit = async () => {
     const value = formRef.current.getFieldValue();
-    const res = await reviewQuestion(questionId, value);
+    const question = data.find((item) => item.id == questionId);
+    const res = await reviewQuestion(questionId, value, question.user_id);
     if (res.code) {
       message.success(res.msg);
       getAllReviewQuestions();
